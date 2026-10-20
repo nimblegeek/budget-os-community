@@ -15,6 +15,9 @@ Community source: [nimblegeek/budget-os-community](https://github.com/nimblegeek
 - **Skulder & stöd:** loans, repayment forecasts, manual debt progress and optional
   creditor/advisor workflows. Drafts and agreements do not execute payments or
   automatically contact creditors.
+- Interactive debt playground: live extra-payment/rate-reduction controls,
+  baseline comparison, a monthly timeline, interest/time savings and payoff
+  milestones. Mortgage loans are excluded; scenarios never edit stored finances.
 - **Investera:** a clearly marked future area, not a portfolio manager.
 - Desktop Cmd/Ctrl+K search, collapsible sidebar, arbitrary date ranges and dark mode.
 - Public landing page with creator credit to [JAS](https://jonasasihlen.com).

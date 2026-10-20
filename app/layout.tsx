@@ -9,6 +9,7 @@ import "./terminal.css";
 import "./budget-focus.css";
 import "./sidebar.css";
 import "./debt-focus.css";
+import "./debt-playground.css";
 import "./app-surface.css";
 import "./budget-clarity.css";
 import "./command-center.css";

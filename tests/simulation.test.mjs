@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {projectDebts,scenarioTotals} from '../lib/simulation.mjs';
+import {projectDebts,scenarioTotals,compareDebtScenario,projectionBalanceAt} from '../lib/simulation.mjs';
+import {createElement} from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+import DebtPlayground from '../app/debt-playground.tsx';
 import {historyFor,debtHistorySchema} from '../lib/journey.ts';
 const loan=(id,balance,monthly,rate=0,type='Blanco')=>({id,balance,monthly,rate,type});
 test('Scenario subtracts saving once and never funds extra from a deficit',()=>{
@@ -38,4 +41,44 @@ test('History compares identical loan IDs and retains paid-off zero balances',()
   assert.equal(historyFor(h,['a'])[0].verified,false);
   assert.equal(debtHistorySchema.safeParse([...h,h[0]]).success,false);
   assert.equal(debtHistorySchema.safeParse([{...h[0],date:'2026-02-30'}]).success,false);
+});
+test('Interactive comparison reduces each nominal rate in percentage points, floors at zero and never mutates saved loans',()=>{
+ const debts=[loan('a',10000,400,18),loan('b',20000,500,6),loan('home',900000,1000,null,'Bolån'),loan('closed',0,200,40)];
+ const copy=structuredClone(debts),result=compareDebtScenario(debts,500,8);
+ assert.deepEqual(debts,copy);assert.equal(result.balance,30000);assert.equal(result.monthly,900);
+ assert.equal(result.currentRate,10);assert.equal(result.scenarioRate,100000/30000);
+ assert.ok(result.monthsSaved>0);assert.ok(result.interestSaved>0);
+ assert.deepEqual(result.scenario,projectDebts([loan('a',10000,400,10),loan('b',20000,500,0)],500));
+ assert.throws(()=>compareDebtScenario(debts,0,-1));assert.throws(()=>compareDebtScenario(debts,0,NaN));
+});
+test('Reset-equivalent scenario matches baseline, including zero-interest, zero-balance and incomplete forecasts',()=>{
+ const same=compareDebtScenario([loan('a',1200,100,0)]);
+ assert.deepEqual(same.base,same.scenario);assert.equal(same.monthsSaved,0);assert.equal(same.interestSaved,0);
+ const empty=compareDebtScenario([]);assert.equal(empty.balance,0);assert.equal(empty.scenario.months,0);
+ const stalled=compareDebtScenario([loan('a',10000,0,12)],1000,2);
+ assert.ok(stalled.base.error);assert.ok(stalled.scenario.months>0);
+ assert.equal(stalled.monthsSaved,null);assert.equal(stalled.interestSaved,null);
+ const missing=compareDebtScenario([loan('a',10000,100,null)],1000,100);
+ assert.equal(missing.currentRate,null);assert.equal(missing.scenarioRate,null);assert.ok(missing.scenario.error);
+});
+test('Timeline returns paid-off zero but never invents future points for an incomplete forecast',()=>{
+ const paid=projectDebts([loan('a',1200,100)]);
+ assert.equal(projectionBalanceAt(paid,0),1200);assert.equal(projectionBalanceAt(paid,6),600);assert.equal(projectionBalanceAt(paid,120),0);
+ assert.equal(projectionBalanceAt({points:[{month:0,balance:100}],error:'Incomplete'},1),null);
+ assert.equal(projectionBalanceAt({points:[],error:'Missing'},0),null);
+});
+const uiLoan={...loan('a',10000,400,18),name:'Exempellån',original:10000,note:'',balanceVerified:true};
+const render=(debts,extra=0,editable=true)=>renderToStaticMarkup(createElement(DebtPlayground,{debts,extra,setExtra:()=>{},editable,onEdit:()=>{}}));
+test('Debt playground exposes keyboard-accessible controls, comparison graph and milestones without a save action',()=>{
+ const debts=[uiLoan],before=structuredClone(debts),html=render(debts),extra=render(debts,1000);
+ for(const text of ['Din väg till noll.','Extra betalning per månad','Räntesänkning i procentenheter','Utforska prognosmånad','Skuldprognos:','25% betalt','Skuldfri','Inget sparas.','Återställ skuldsimulering'])assert.ok(html.includes(text),text);
+ assert.equal((html.match(/type="range"/g)||[]).length,3);
+ assert.ok(!html.includes('Spara scenario'));assert.notEqual(html,extra);assert.deepEqual(debts,before);
+ assert.ok(render(debts,0,false).includes('Reglage för räntesänkning'),'Viewer can simulate without editing');
+});
+test('Empty, mortgage-only and missing-rate UI never fabricates a payoff graph or edits for a viewer',()=>{
+ assert.ok(render([]).includes('Lägg till ett lån'));assert.ok(!render([]).includes('Skuldprognos:'));
+ assert.ok(render([{...uiLoan,type:'Bolån'}]).includes('Här simulerar du lån utom bolån.'));
+ const missing={...uiLoan,rate:null};assert.ok(render([missing]).includes('Ange ränta: Exempellån'));
+ const viewer=render([missing],0,false);assert.ok(viewer.includes('ränta saknas'));assert.ok(!viewer.includes('Ange ränta:'));assert.ok(!viewer.includes('Skuldprognos:'));
 });

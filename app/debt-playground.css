@@ -1,0 +1,62 @@
+.debt-lab{border:1px solid var(--line);border-radius:10px;padding:24px;margin:4px 0 28px;background:var(--surface);min-width:0}
+.debt-lab-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.debt-lab-kicker{display:flex;align-items:center;gap:6px;font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:var(--green)}
+.debt-lab h2{font-size:23px;letter-spacing:-1px;font-weight:500;margin:10px 0}
+.debt-lab-reset{display:flex;align-items:center;gap:7px;color:var(--muted);min-height:44px;font-size:11px}
+.debt-lab-scope{font-size:10px;color:var(--muted);margin:0 0 24px;line-height:1.7}
+.debt-lab-controls{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+.debt-lab-control>label{display:flex;flex-direction:column;gap:10px;font-size:11px;color:var(--muted)}
+.debt-lab-control>label>span{display:flex;align-items:baseline;gap:6px;color:var(--ink)}
+.debt-lab-control input[type=number]{width:135px;max-width:75%;padding:7px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;font:inherit;font-size:24px;letter-spacing:-1px;color:var(--ink);min-height:44px}
+.debt-lab-control small{font-size:10px;color:var(--muted)}
+.debt-lab input[type=range]{display:block;width:100%;height:44px;margin:5px 0;accent-color:var(--green);cursor:pointer;min-width:0;padding:0;border:0;box-shadow:none;background:transparent}
+.debt-lab-presets{display:flex;gap:5px;flex-wrap:wrap}
+.debt-lab-presets button{font-size:10px;border:1px solid var(--line);border-radius:5px;padding:6px 9px;min-height:36px;color:var(--muted);font-variant-numeric:tabular-nums}
+.debt-lab-presets button[aria-pressed=true]{color:var(--green);border-color:var(--green);background:var(--soft)}
+.debt-lab-rate-note{font-size:10px;color:var(--muted);line-height:1.7;margin:0}
+.debt-lab-rate-note strong{color:var(--green);font-weight:500}
+.debt-lab-rate-note>span:last-child{display:block}
+.debt-lab-results{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0 8px}
+.debt-lab-results>div{min-width:0}
+.debt-lab-results span,.debt-lab-results small{display:block;font-size:10px;color:var(--muted);line-height:1.7}
+.debt-lab-results strong{font-size:clamp(18px,2.7vw,28px);font-weight:500;letter-spacing:-1px;display:block;margin:8px 0;color:var(--green);overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.debt-lab-chart svg{width:100%;height:auto;display:block;overflow:visible}
+.debt-lab-chart text{font-family:inherit;font-size:11px;fill:var(--muted)}
+.debt-lab-base,.debt-lab-line{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.debt-lab-base{stroke:var(--muted);stroke-dasharray:5 6;opacity:.7}
+.debt-lab-line{stroke:var(--green);stroke-width:3}
+.debt-lab-cursor{stroke:var(--muted);stroke-dasharray:3 5;opacity:.5}
+.debt-lab-legend{display:flex;gap:20px;justify-content:center;font-size:10px;color:var(--muted);margin:0 0 20px}
+.debt-lab-legend span{display:flex;align-items:center;gap:6px}
+.debt-lab-legend i{width:18px;border-top:2px dashed var(--muted)}
+.debt-lab-legend span:last-child i{border-top:2px solid var(--green)}
+.debt-lab-timeline>span{font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.debt-lab-timeline strong{color:var(--ink);font-weight:500}
+.debt-lab-inspect{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;background:var(--soft);border-radius:6px;padding:16px}
+.debt-lab-inspect>div:last-of-type{text-align:right}
+.debt-lab-inspect small{display:block;font-size:10px;color:var(--muted);margin-bottom:6px}
+.debt-lab-inspect strong{font-size:16px;font-weight:500;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.debt-lab-inspect svg,.debt-lab-inspect>div:last-of-type strong{color:var(--green)}
+.debt-lab-inspect>span{grid-column:1/-1;font-size:10px;color:var(--muted);text-align:center;margin-top:6px}
+.debt-lab-milestones{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:24px}
+.debt-lab-milestones>div{border-top:2px solid var(--line);padding-top:12px;min-width:0;transition:border-color .2s ease}
+.debt-lab-milestones>div[data-reached=true]{border-color:var(--green)}
+.debt-lab-milestones span,.debt-lab-milestones small{display:block;font-size:9px;color:var(--muted);line-height:1.6}
+.debt-lab-milestones strong{display:block;font-size:11px;font-weight:500;margin:6px 0;overflow-wrap:anywhere}
+.debt-lab-milestones>div[data-reached=true] span{color:var(--green)}
+.debt-lab-details{border-top:1px solid var(--line);margin-top:24px}
+.debt-lab-details summary{font-size:11px;min-height:48px;display:flex;align-items:center;cursor:pointer;color:var(--muted)}
+.debt-lab-details summary::after{content:'+';margin-left:auto;font-size:16px}
+.debt-lab-details[open] summary::after{content:'−'}
+.debt-lab-details p{font-size:10px;color:var(--muted);line-height:1.8}
+.debt-lab-loans{display:grid;gap:4px;margin-bottom:16px}
+.debt-lab-loans label{display:flex;gap:10px;align-items:center;min-height:48px;font-size:12px;cursor:pointer}
+.debt-lab-loans input[type=checkbox]{width:18px;height:18px;accent-color:var(--green);flex-shrink:0}
+.debt-lab-loans small{display:block;font-size:10px;color:var(--muted);margin-top:5px}
+.debt-lab-strategy{font-size:11px;color:var(--muted);display:grid;gap:8px;margin:16px 0}
+.debt-lab-strategy select{min-height:44px;width:100%;max-width:100%;font:inherit}
+.debt-lab-warning{font-size:11px!important;color:var(--warning,#bc8560)!important;line-height:1.8;margin:20px 0}
+.debt-lab-warning button{display:block;min-height:44px}
+.debt-lab-empty{font-size:12px;color:var(--muted);line-height:1.8;margin:16px 0 0}
+@media(max-width:650px){.debt-lab{padding:18px 14px;border-radius:8px}.debt-lab h2{font-size:22px}.debt-lab-controls{gap:16px;grid-template-columns:1fr}.debt-lab-control>label{flex-direction:row;align-items:center;justify-content:space-between;gap:8px}.debt-lab-control input[type=number]{width:100px;font-size:23px}.debt-lab-results{gap:12px;margin-top:20px}.debt-lab-results strong{font-size:20px;letter-spacing:-.8px}.debt-lab-inspect{padding:12px 10px;gap:6px}.debt-lab-inspect strong{font-size:14px}.debt-lab-milestones{grid-template-columns:repeat(2,1fr);gap:18px 12px}.debt-lab-presets button{min-height:44px;flex:1;padding:6px}.debt-lab-scope{font-size:10px;margin-bottom:12px}}
+@media(prefers-reduced-motion:reduce){.debt-lab *{transition:none!important}}

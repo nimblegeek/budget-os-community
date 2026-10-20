@@ -2,8 +2,8 @@
 import {Plus,Trash2,Info,ChevronDown,MessageSquare} from 'lucide-react';
 import {type Budget,kr,sum} from '../lib/budget';
 type Loan=Budget['debts'][number];
-type Props={debts:Loan[];editable:boolean;busy:boolean;onAdd:()=>void;onEdit:(loan:Loan)=>void;onDelete:(loan:Loan)=>void;onCreditors:()=>void;showPlanning?:boolean;children?:React.ReactNode};
-export default function DebtFocus({debts,editable,busy,onAdd,onEdit,onDelete,onCreditors,showPlanning,children}:Props){
+type Props={debts:Loan[];editable:boolean;busy:boolean;onAdd:()=>void;onEdit:(loan:Loan)=>void;onDelete:(loan:Loan)=>void;onCreditors:()=>void;showPlanning?:boolean;simulation?:React.ReactNode;children?:React.ReactNode};
+export default function DebtFocus({debts,editable,busy,onAdd,onEdit,onDelete,onCreditors,showPlanning,simulation,children}:Props){
  const active=debts.filter(x=>x.balance>0),closed=debts.filter(x=>x.balance===0);
  const unverified=active.filter(x=>!x.balanceVerified).length;
  const row=(loan:Loan)=><div className="loan-row" key={loan.id}>
@@ -21,6 +21,7 @@ export default function DebtFocus({debts,editable,busy,onAdd,onEdit,onDelete,onC
    {unverified>0&&<p className="debt-caution">{unverified===1?'Ett lån har äldre saldo.':`${unverified} lån har äldre saldon.`}</p>}
   </section>
   {editable?<button className="debt-add" disabled={busy} onClick={onAdd}><Plus size={19} aria-hidden="true"/> Lägg till lån</button>:<p className="focus-help">Du har läsbehörighet.</p>}
+  {simulation}
   <section className="loan-list" aria-label="Aktiva lån">
    {active.length?active.map(row):<p className="debt-empty">{closed.length?'Inga aktiva lån.':'Inga lån tillagda ännu.'}</p>}
   </section>
