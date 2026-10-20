@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: budget_os
+      POSTGRES_USER: budget_os
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a random hex POSTGRES_PASSWORD in .env}
+    volumes:
+      - budget-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U budget_os -d budget_os"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+  migrate:
+    image: budget-os-local
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:?Set your own Clerk public key}
+    environment:
+      DATABASE_DRIVER: pg
+      DATABASE_URL: postgresql://budget_os:${POSTGRES_PASSWORD}@db:5432/budget_os
+    command: ["node","scripts/migrate-postgres.mjs"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+  app:
+    image: budget-os-local
+    environment:
+      APP_URL: ${APP_URL:?Set your canonical app URL}
+      DATABASE_DRIVER: pg
+      DATABASE_URL: postgresql://budget_os:${POSTGRES_PASSWORD}@db:5432/budget_os
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:?Set your own Clerk secret key}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+volumes:
+  budget-postgres:

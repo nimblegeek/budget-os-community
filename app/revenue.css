@@ -1,0 +1,74 @@
+.revenue-page{max-width:760px;margin:24px auto 0}
+.revenue-hero{text-align:center;padding:18px 0 26px}
+.revenue-total{display:block;font-size:clamp(32px,6vw,60px);font-weight:400;letter-spacing:-2px;color:var(--green);margin:16px 0 8px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.revenue-hero .page-actions{justify-content:center;margin-top:24px;flex-wrap:wrap}
+.revenue-card{padding:24px 0;border-bottom:1px solid var(--line)}
+.revenue-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.revenue-section-head h2{margin:0;font-size:13px;font-weight:500}
+.revenue-tabs{display:flex;border:1px solid var(--line);border-radius:5px;padding:3px;gap:3px}
+.revenue-tabs button{min-height:36px;padding:0 11px;font-size:11px;color:var(--muted);border-radius:3px}
+.revenue-tabs button[aria-pressed=true]{background:var(--soft);color:var(--ink)}
+.revenue-distribution{display:grid;grid-template-columns:260px minmax(0,1fr);gap:28px;align-items:center}
+.revenue-ring{position:relative;width:260px;height:260px;display:grid;place-items:center}
+.revenue-ring svg{position:absolute;inset:0;width:100%;height:100%}
+.revenue-ring>div{position:relative;text-align:center;max-width:180px}
+.revenue-ring span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.revenue-ring strong{display:block;margin-top:12px;font-size:24px;letter-spacing:-1px;font-weight:500;overflow-wrap:anywhere}
+.revenue-no-ring{display:flex;flex-direction:column;justify-content:center;gap:12px;background:var(--soft);border-radius:50%;text-align:center;padding:26px}
+.revenue-no-ring small{font-size:11px;color:var(--muted)}
+.revenue-legend{min-width:0}
+.revenue-group{width:100%;display:flex;align-items:center;text-align:left;gap:12px;min-height:64px;border-bottom:1px solid var(--line);padding:12px 0}
+.revenue-group:disabled{opacity:1;cursor:default}
+.revenue-key{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.revenue-group-name{font-size:12px;flex:1;min-width:0;overflow-wrap:anywhere}
+.revenue-group-name i{display:block;height:3px;margin-top:8px;border-radius:2px}
+.revenue-group-value{text-align:right;flex-shrink:0;font-size:12px;font-variant-numeric:tabular-nums}
+.revenue-group-value strong{font-weight:500}.revenue-group-value small{display:block;font-size:10px;color:var(--muted);margin-top:5px}
+.revenue-unassigned{display:flex;align-items:center;justify-content:space-between;text-align:left;width:100%;gap:16px;font-size:11px;background:var(--soft);padding:14px;border-radius:5px;margin-top:24px;min-height:48px}
+.revenue-unassigned>span:last-child{display:flex;align-items:center;gap:6px;color:var(--green)}
+.revenue-source{border-bottom:1px solid var(--line);padding:6px 0 10px}
+.revenue-source-main{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;text-align:left;min-height:68px}
+.revenue-source-main>span:first-child{min-width:0;flex:1}
+.revenue-source-main strong{display:block;font-size:13px;font-weight:500;overflow-wrap:anywhere}
+.revenue-source-main small{display:block;margin-top:6px;font-size:10px;color:var(--muted)}
+.revenue-source-main .right{font-variant-numeric:tabular-nums;flex-shrink:0}
+.revenue-source-actions{display:flex;gap:4px;align-items:center;justify-content:flex-end}
+.revenue-source-actions .textbtn{font-size:11px;margin-right:auto;min-height:44px}
+.revenue-source-actions .iconbtn{min-width:44px;min-height:44px}
+.revenue-target{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted);margin-bottom:6px}
+.revenue-target progress{width:100%;height:4px;accent-color:var(--green)}
+.revenue-check{display:flex;align-items:center;gap:10px;min-height:44px;font-size:12px;color:var(--muted);margin:10px 0}
+.revenue-check input,.revenue-payment>input{width:18px;height:18px;accent-color:var(--green);flex-shrink:0}
+.revenue-payments{scroll-margin-top:20px}
+.revenue-payment-body{padding:4px 0 20px}
+.revenue-payment-filters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;align-items:end}
+.revenue-payment-filters label:not(.search),.revenue-assign label{display:flex;flex-direction:column;gap:8px;font-size:11px;color:var(--muted);min-width:0}
+.revenue-payment-filters select,.revenue-assign select{min-height:44px;width:100%;min-width:0}
+.revenue-assign{display:flex;gap:12px;align-items:end;background:var(--soft);padding:14px;border-radius:5px}
+.revenue-assign label{flex:1}
+.revenue-payment{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);min-width:0}
+.revenue-payment>button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-width:0;text-align:left;min-height:72px;padding:14px 0}
+.revenue-payment>button:disabled{opacity:1}
+.revenue-payment button>span{min-width:0}
+.revenue-payment strong{font-size:12px;display:block;font-weight:500;overflow-wrap:anywhere}
+.revenue-payment button>strong{white-space:nowrap;font-variant-numeric:tabular-nums}
+.revenue-payment small{font-size:10px;display:block;margin-top:6px;color:var(--muted)}
+.revenue-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:26px 10px}
+.revenue-empty p{margin:0}.revenue-empty svg{color:var(--green)}
+.revenue-footnote{margin:24px 0}
+.revenue-page :is(button,summary):focus-visible{outline:2px solid var(--green);outline-offset:3px}
+.revenue-share-controls{padding:0 24px 24px}.revenue-share-image{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:7px;margin-bottom:18px}
+.revenue-share-loading{padding:60px 16px;text-align:center;font-size:12px}
+@media(max-width:650px){
+ .revenue-page{margin:6px auto 0}.revenue-hero{padding:14px 0 16px}
+ .revenue-total{font-size:clamp(30px,9vw,45px);margin-top:14px;letter-spacing:-1.6px}
+ .revenue-hero .page-actions{gap:8px;margin-top:18px}.revenue-hero .btn{font-size:11px;padding:10px 12px;min-height:44px}
+ .revenue-distribution{grid-template-columns:1fr;gap:4px}.revenue-ring{width:240px;height:240px;margin:auto}
+ .revenue-card{padding:20px 0}.revenue-section-head{gap:8px}.revenue-tabs button{padding:0 8px;font-size:10px}
+ .revenue-group{min-height:57px}.revenue-group-name{font-size:11px}
+ .revenue-unassigned{font-size:10px;padding:12px;gap:8px}
+ .revenue-payment-filters{grid-template-columns:1fr}.revenue-payment{gap:8px}
+ .revenue-payment strong{font-size:11px}.revenue-payment button{gap:8px}
+ .revenue-assign{padding:12px;gap:8px}.revenue-assign .btn{font-size:11px}
+ .revenue-share-controls{padding:0 16px 20px}
+}

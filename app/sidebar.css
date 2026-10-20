@@ -1,0 +1,24 @@
+@media(min-width:651px){
+ .sidebar{width:208px;padding:18px 12px;border-right:1px solid var(--line);transition:width .18s ease}
+ .sidebar+.main{margin-left:208px;transition:margin-left .18s ease}
+ .sidebar-head{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:44px;margin-bottom:22px}
+ .sidebar-toggle{display:grid;place-items:center;min-width:40px;width:40px;height:44px;border-radius:5px;color:var(--muted)}
+ .sidebar-toggle:hover{background:var(--soft);color:var(--ink)}
+ .sidebar .workspace{margin:0 8px 20px;padding:0;min-width:0}
+ .sidebar .workspace strong{display:block;font:11px var(--terminal-mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .sidebar nav button{min-height:44px;gap:10px;font-size:12px;position:relative}
+ .sidebar .account{margin:16px 0 0;border-top:1px solid var(--line);padding-top:16px;gap:8px}
+ .sidebar .account>div{min-width:0;flex:1}
+ .sidebar .account strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+ .sidebar .account>button{min-width:36px;min-height:44px}
+ .sidebar[data-collapsed=true]{width:64px;padding:18px 8px}
+ .sidebar[data-collapsed=true]+.main{margin-left:64px}
+ .sidebar[data-collapsed=true] .sidebar-head{justify-content:center}
+ .sidebar[data-collapsed=true] :is(.sidebar-head>.budget-brand,.workspace,.account>.avatar,.account>div){display:none}
+ .sidebar[data-collapsed=true] nav button{justify-content:center;padding:10px 0;gap:0}
+ .sidebar[data-collapsed=true] nav button>span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+ .sidebar[data-collapsed=true] nav small{position:absolute;top:1px;right:0;font-size:9px;padding:0 3px}
+ .sidebar[data-collapsed=true] .account{justify-content:center}
+}
+@media(max-width:650px){.sidebar-head{display:none}}
+@media(prefers-reduced-motion:reduce){.sidebar,.sidebar+.main{transition:none}}

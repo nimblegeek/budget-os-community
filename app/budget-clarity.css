@@ -1,0 +1,71 @@
+.budget-focus--clarity{display:flex;flex-direction:column}
+.budget-focus--clarity>*{order:0}
+.budget-focus--clarity .focus-balance{padding-bottom:8px}
+.budget-focus--clarity .focus-balance output{margin-bottom:0}
+.budget-focus--clarity .balance-caption{font-size:11px;margin:10px 0 0;color:var(--muted)}
+.balance-equation{display:grid;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr);align-items:center;gap:6px;max-width:430px;margin:12px auto 0}
+.balance-equation>span{color:var(--muted)}
+.balance-equation button{min-height:56px;padding:8px 5px;min-width:0;border-radius:4px}
+.balance-equation button:hover{background:var(--soft)}
+.balance-equation strong{display:block;font-weight:500;font-size:14px;letter-spacing:-.3px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.balance-equation small{display:flex;align-items:center;justify-content:center;gap:3px;font-size:10px;margin-top:6px}
+.budget-focus--clarity .focus-explainer{margin-top:0;max-width:480px}
+.budget-focus--clarity .focus-entry{border:0;padding:8px 0 16px}
+.budget-focus--clarity .focus-add{margin-top:0}
+.budget-focus--clarity .budget-plan{border-top:1px solid var(--line)}
+.budget-plan{scroll-margin-top:82px}
+.budget-focus--clarity .budget-plan>summary{min-height:64px}
+.budget-plan summary small{font-size:11px}
+.budget-focus--clarity .focus-step-number{border:0;width:22px}
+.budget-comparison{margin:22px 0 14px;padding:0 0 14px;border-bottom:1px solid var(--line)}
+.budget-comparison figcaption{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.budget-comparison h2{font-size:12px;font-weight:500;margin:0}
+.budget-comparison figcaption button{display:flex;align-items:center;gap:4px;min-height:40px;font-size:10px;color:var(--muted)}
+.comparison-legend{display:flex;gap:14px;margin:4px 0 14px;font-size:10px;color:var(--muted)}
+.comparison-legend span{display:flex;align-items:center;gap:6px}
+.comparison-legend i{width:10px;height:3px;background:var(--muted)}
+.comparison-legend span:last-child i{background:var(--green)}
+.comparison-group{display:block;width:100%;text-align:left;min-width:0;padding:10px 0;border-radius:4px}
+.comparison-group:hover{background:var(--soft)}
+.comparison-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;margin:0 0 5px}
+.comparison-heading svg{color:var(--muted)}
+.comparison-line{display:grid;grid-template-columns:minmax(0,1fr) 106px;align-items:center;gap:12px;min-height:24px}
+.comparison-track{display:block;position:relative;height:5px;background:var(--soft);border-radius:2px}
+.comparison-track i{position:absolute;height:100%;display:block;background:var(--muted);border-radius:2px;min-width:0}
+.comparison-track b{position:absolute;top:-2px;height:9px;width:1px;background:var(--muted);opacity:.5}
+.comparison-line>span:last-child{text-align:right;font-size:11px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;color:var(--muted)}
+.comparison-actual .comparison-track i{background:var(--green)}
+.comparison-actual .comparison-track i.negative{background:#d77968}
+.comparison-actual>span:last-child{color:var(--ink)}
+.budget-comparison>p{font-size:10px;line-height:1.7;margin:12px 0 0}
+.budget-focus--clarity .budget-recent{display:block;margin:0 0 12px}
+.budget-recent>header{display:flex;align-items:center;justify-content:space-between;min-height:44px;border-bottom:1px solid var(--line);gap:10px}
+.budget-recent h2{font-size:12px;font-weight:500;margin:0}
+.budget-recent>header button{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--muted);min-height:44px}
+.budget-recent .focus-mobile-row{display:flex;align-items:center;gap:4px;border-bottom:1px solid var(--line);min-width:0}
+.budget-recent .focus-mobile-edit{display:flex;align-items:center;justify-content:space-between;flex:1;min-width:0;gap:12px;padding:14px 0;text-align:left;min-height:64px}
+.budget-recent .focus-mobile-edit>span:first-child{min-width:0}
+.budget-recent .focus-mobile-edit strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:500}
+.budget-recent .focus-mobile-edit small{display:block;font-size:10px;margin-top:5px}
+.budget-recent .focus-mobile-edit>span:last-child{font-size:12px;flex-shrink:0;font-variant-numeric:tabular-nums}
+.budget-recent .focus-mobile-delete{display:grid;place-items:center;width:44px;min-width:44px;min-height:48px;color:var(--muted);border-radius:4px}
+.budget-recent .focus-mobile-delete:hover{color:#d77968;background:var(--soft)}
+.budget-recent>.focus-help{font-size:12px;padding:18px 0;margin:0}
+.recent-toggle{display:block;width:100%;min-height:44px;color:var(--muted);font-size:11px}
+.sidebar-page-number{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0;width:16px}
+.sidebar nav button.active .sidebar-page-number{color:var(--green)}
+@media(max-width:650px){
+ .budget-focus--clarity .focus-balance{padding:10px 0 0}
+ .budget-focus--clarity .focus-balance output{font-size:clamp(26px,9vw,44px)}
+ .budget-focus--clarity .balance-caption{font-size:10px;line-height:1.5}
+ .balance-equation{margin-top:8px}
+ .balance-equation strong{font-size:12px}
+ .budget-focus--clarity .focus-entry{padding:4px 0 14px}
+ .budget-focus--clarity .focus-explainer summary{min-height:36px}
+ .budget-focus--clarity .budget-plan>summary{min-height:60px}
+ .budget-plan{scroll-margin-top:16px}
+ .budget-comparison{margin-top:12px}
+ .budget-comparison h2{font-size:11px}
+ .budget-comparison figcaption button{font-size:10px}
+ .budget-recent .focus-mobile-edit>span:last-child{font-size:11px}
+}

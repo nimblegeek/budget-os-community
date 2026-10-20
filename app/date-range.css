@@ -1,0 +1,13 @@
+.period-filter{border:1px solid var(--line);border-radius:9px;background:var(--soft);padding:20px 22px;margin-bottom:24px}
+.period-heading{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.period-heading strong{font-size:14px;font-weight:600}
+.period-filter form{display:grid;grid-template-columns:minmax(150px,1.2fr) repeat(2,minmax(130px,1fr)) auto;gap:12px;align-items:end}
+.period-filter label{font-size:11px;min-width:0}
+.period-filter input,.period-filter select{width:100%;min-width:0;min-height:44px}
+.period-filter .btn{min-height:44px}
+.period-filter>p{margin-top:12px;font-size:11px}
+.period-error{color:#a04239}
+html[data-theme=dark] .period-error{color:#ffb1a6}
+@media(max-width:1050px){.period-filter form{grid-template-columns:repeat(2,minmax(0,1fr))}.period-filter label:first-child{grid-column:1/-1}.period-filter .btn{grid-column:1/-1;justify-self:end}}
+@media(max-width:650px){.period-filter{padding:18px 16px;margin-bottom:20px}.period-filter input,.period-filter select{font-size:16px}.period-heading{gap:8px}.period-heading strong{font-size:13px}.period-filter .btn{width:100%}.period-filter form{column-gap:10px}}
+@media(max-width:380px){.period-filter form{grid-template-columns:minmax(0,1fr)}}

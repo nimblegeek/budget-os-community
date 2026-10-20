@@ -1,0 +1,45 @@
+.debt-focus{max-width:680px;margin:36px auto 0}
+.debt-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;gap:16px}
+.debt-heading h1{font-size:18px;font-weight:500;letter-spacing:-.5px;margin:0}
+.debt-heading>span{font-size:10px;color:var(--muted);letter-spacing:1px}
+.debt-summary{text-align:center;padding:16px 0 20px}
+.debt-total>span,.debt-monthly>span{display:block;text-transform:uppercase;letter-spacing:1.2px;font-size:11px;color:var(--muted)}
+.debt-total output{display:block;color:var(--green);font-size:clamp(30px,5vw,54px);letter-spacing:-2.5px;line-height:1.25;margin:14px 0 28px;overflow-wrap:anywhere}
+.debt-monthly output{display:block;font-size:26px;letter-spacing:-1px;margin:10px 0 12px;overflow-wrap:anywhere}
+.debt-caution{font-size:11px;color:var(--muted);margin:0}
+.debt-add{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;border-radius:5px;background:var(--green);color:var(--canvas);font-size:14px;margin:0 0 20px}
+.loan-list{border-top:1px solid var(--line)}
+.loan-row{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.loan-edit{display:flex;align-items:center;justify-content:space-between;gap:16px;flex:1;min-width:0;text-align:left;padding:20px 0;min-height:76px}
+.loan-edit>span:first-child{min-width:0;flex:1}
+.loan-edit strong{font-size:14px;font-weight:500;display:block;overflow-wrap:anywhere}
+.loan-edit small{display:block;font-size:11px;color:var(--muted);margin-top:6px}
+.loan-edit>span:last-child{text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+.loan-delete{display:grid;place-items:center;width:44px;min-width:44px;height:48px;color:var(--muted);border-radius:5px}
+.loan-delete:hover{color:#d77968;background:var(--soft)}
+.debt-empty{padding:28px 0;font-size:13px}
+.debt-more,.debt-closed{border-bottom:1px solid var(--line);margin-top:16px}
+.debt-more>summary,.debt-closed>summary{display:flex;align-items:center;justify-content:space-between;list-style:none;min-height:52px;font-size:12px;color:var(--muted);cursor:pointer}
+.debt-more>summary::-webkit-details-marker,.debt-closed>summary::-webkit-details-marker{display:none}
+.debt-more[open]>summary>svg,.debt-closed[open]>summary>svg{transform:rotate(180deg)}
+.debt-contact{display:flex;align-items:center;gap:8px;min-height:44px;font-size:12px;color:var(--green);margin:8px 0 20px}
+.debt-more .grid{grid-template-columns:1fr}
+.debt-more .optional-section{margin-bottom:20px}
+.debt-focus :is(button,summary):focus-visible{outline:2px solid var(--green);outline-offset:4px}
+.debt-focus button:disabled{opacity:.65;cursor:default}
+@media(max-width:650px){
+ .debt-focus{margin:18px auto 0}
+ .debt-heading{margin-bottom:12px}
+ .debt-heading h1{font-size:15px}
+ .debt-heading>span{font-size:9px}
+ .debt-summary{padding:16px 0 14px}
+ .debt-total output{font-size:clamp(25px,8.5vw,40px);letter-spacing:-1.8px;margin:12px 0 22px}
+ .debt-monthly output{font-size:23px}
+ .debt-summary .focus-explainer summary{font-size:10px}
+ .loan-row{gap:4px}
+ .loan-edit{gap:8px;padding:16px 0}
+ .loan-edit strong{font-size:12px}
+ .loan-edit small{font-size:10px}
+ .loan-edit>span:last-child{max-width:52%;flex-shrink:1}
+ .debt-add{font-size:13px}
+}

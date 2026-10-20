@@ -1,0 +1,54 @@
+.hub-breadcrumb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:10px;color:var(--muted);margin:0 0 14px}
+.hub-breadcrumb>span{display:flex;align-items:center;gap:10px}.hub-breadcrumb button{display:flex;align-items:center;gap:6px;min-height:36px;color:var(--muted)}
+.hub-breadcrumb button:hover{color:var(--green)}
+.hub-intro{margin:12px 0 28px}.hub-intro h2{font-size:32px;line-height:1.25;letter-spacing:-1.2px;font-weight:400;margin:0}.hub-intro h2>span{color:var(--muted)}
+.hub-intro p{font-size:12px;color:var(--muted);margin:14px 0 0}
+.hub-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.hub-card{display:flex;flex-direction:column;text-align:left;min-width:0;border:1px solid var(--line);border-radius:8px;padding:24px;background:var(--surface);transition:background .15s,border-color .15s}
+.hub-card:hover{background:var(--soft);border-color:var(--muted)}
+.hub-card-top{display:flex;align-items:center;gap:10px;color:var(--green);width:100%}
+.hub-card-top>span{font-size:10px;color:var(--muted);margin-left:auto}.hub-card-top>svg:last-child{color:var(--muted)}
+.hub-card h3{font-size:18px;font-weight:500;letter-spacing:-.5px;margin:20px 0 10px}
+.hub-card p{font-size:11px;color:var(--muted);line-height:1.7;margin:0 0 22px;flex:1}
+.hub-card-number{display:block;margin-top:auto;min-width:0}.hub-card-number strong{display:block;font-size:24px;font-weight:400;letter-spacing:-1px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.hub-card-number small{display:block;font-size:10px;margin-top:7px;color:var(--muted)}
+.hub-card--investera .hub-card-number strong{font-size:17px;letter-spacing:0;color:var(--muted)}
+.hub-card-includes{font-size:9px;line-height:1.6;color:var(--muted);display:block;width:100%;margin-top:20px;padding-top:14px;border-top:1px solid var(--line)}
+.group-hub h2{font-size:26px;font-weight:400;letter-spacing:-1px;margin:16px 0}
+.group-hub>p{font-size:12px;line-height:1.9;color:var(--muted);max-width:560px;margin-bottom:28px}
+.hub-feature{width:100%;display:flex;align-items:center;gap:16px;text-align:left;min-height:96px;border-bottom:1px solid var(--line);padding:20px 0}
+.hub-feature-number{font-size:10px;color:var(--muted);flex-shrink:0}
+.hub-feature>span:nth-child(2){flex:1;min-width:0}
+.hub-feature strong{font-size:14px;font-weight:500;display:block}
+.hub-feature small{font-size:11px;line-height:1.8;color:var(--muted);display:block;margin-top:7px}
+.hub-feature>svg{color:var(--muted);flex-shrink:0}.hub-feature:hover strong{color:var(--green)}
+.hub-support{margin-top:28px;border:1px solid var(--line);border-radius:6px;padding:0 18px}
+.hub-support>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;cursor:pointer;min-height:78px;font-size:13px}
+.hub-support>summary::-webkit-details-marker{display:none}
+.hub-support summary small{display:block;font-size:10px;color:var(--muted);line-height:1.6;margin-top:6px}
+.hub-support>p{font-size:11px;line-height:1.8;color:var(--muted)}
+.hub-support .hub-feature:last-child{border:0}
+.hub-soon{display:inline-block;border:1px solid var(--line);border-radius:4px;padding:5px 9px;color:var(--muted);font-size:10px}
+.hub-invest-note{display:flex;align-items:flex-start;gap:16px;padding:24px;border:1px solid var(--line);border-radius:6px;margin:30px 0}
+.hub-invest-note>svg{flex-shrink:0;color:var(--green)}
+.hub-invest-note strong{font-size:13px;font-weight:500}.hub-invest-note p{font-size:11px;line-height:1.8;color:var(--muted)}.hub-invest-note .btn{font-size:12px;margin-top:8px}
+.sidebar-group-children{margin:10px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+.sidebar-group-children>p{font-size:9px;color:var(--muted);margin:5px 10px 8px;text-transform:uppercase;letter-spacing:.6px}
+.sidebar[data-collapsed=true] .sidebar-group-children{display:none}
+.sidebar nav .sidebar-group-children button{font-size:11px;min-height:40px}
+.data-page>p,.advisor-context{font-size:12px;line-height:1.8;color:var(--muted)}
+.home-hub button:focus-visible,.group-hub :is(button,summary):focus-visible,.hub-breadcrumb button:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+@media(max-width:650px){
+ .hub-intro{margin:2px 0 22px}.hub-intro h2{font-size:25px}.hub-intro p{font-size:11px}
+ .hub-cards{gap:10px}.hub-card{padding:15px 12px;border-radius:6px}
+ .hub-card h3{font-size:14px;margin:16px 0 9px;letter-spacing:-.4px}.hub-card p{font-size:11px;line-height:1.7;margin-bottom:16px}
+ .hub-card-number strong{font-size:clamp(16px,4.8vw,23px);letter-spacing:-.8px}.hub-card-number small{font-size:9px;line-height:1.6}
+ .hub-card-top{gap:6px}.hub-card-top>svg:first-child{width:19px;height:19px}
+ .hub-card--investera .hub-card-number strong{font-size:14px}
+ .hub-card-includes{display:none}
+ .hub-card--stöd h3{font-size:13px}
+ .hub-breadcrumb{margin-bottom:8px}.group-hub h2{font-size:22px}.group-hub>p{font-size:11px}
+ .hub-feature{gap:11px;padding:17px 0}.hub-feature small{font-size:10px}.hub-feature strong{font-size:12px}
+ .hub-invest-note{padding:18px;gap:12px}.hub-support{padding:0 14px}
+}
+@media(prefers-reduced-motion:reduce){.hub-card{transition:none}}

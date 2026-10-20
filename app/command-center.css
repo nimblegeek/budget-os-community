@@ -1,0 +1,28 @@
+.command-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:4px;min-height:38px;min-width:145px;padding:8px 10px;font-size:11px;color:var(--muted)}
+.command-trigger:hover{color:var(--ink);background:var(--soft)}
+.command-trigger>span{margin-right:auto}
+.command-trigger kbd{font:10px var(--terminal-mono);color:var(--muted)}
+dialog.command-palette{width:min(620px,calc(100vw - 48px));margin:12vh auto auto;max-height:74dvh;overflow:hidden;background:var(--surface,#fff);padding:0;border:1px solid var(--line);box-shadow:0 24px 100px #0006}
+.command-palette[open]{display:flex;flex-direction:column}
+.command-palette .modalhead{min-height:46px;padding:6px 16px;flex-shrink:0;background:var(--surface,#fff)}
+.command-palette .modalhead h2{font-size:11px;font-weight:500;color:var(--muted)}
+.command-input{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);flex-shrink:0}
+.command-input>svg{color:var(--muted)}
+.command-palette .command-input input{border:0;outline:none;background:transparent;box-shadow:none;min-width:0;width:100%;padding:8px 0;font-size:16px;color:var(--ink);border-radius:0}
+.command-input:focus-within{border-bottom-color:var(--green)}
+.command-results{overflow-y:auto;overscroll-behavior:contain;padding:8px;min-height:100px;max-height:48dvh;scrollbar-width:thin}
+.command-group{font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);padding:15px 12px 8px}
+.command-results button{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:60px;padding:10px 12px;width:100%;text-align:left;border-radius:4px}
+.command-results button[aria-selected=true]{background:var(--soft)}
+.command-results button[aria-selected=true]>svg{color:var(--green)}
+.command-results button>span{min-width:0}
+.command-results strong{display:block;font-size:13px;font-weight:500;overflow-wrap:anywhere}
+.command-results small{display:block;margin-top:5px;font-size:11px;line-height:1.6;overflow-wrap:anywhere}
+.command-results button>svg{flex-shrink:0;color:var(--muted)}
+.command-footer{display:flex;gap:16px;align-items:center;padding:14px 20px;border-top:1px solid var(--line);font-size:10px;color:var(--muted);flex-shrink:0}
+.command-footer span{display:flex;align-items:center;gap:5px}
+.command-footer span:last-child{margin-left:auto;font-size:9px}
+.command-empty{padding:30px 18px;font-size:12px}
+@media(max-width:1150px){.app-main .topbar .privacy{display:none}}
+@media(max-width:900px){.command-trigger{min-width:64px;gap:8px}.command-trigger>span{display:none}}
+@media(max-width:650px){.command-trigger{display:none}}

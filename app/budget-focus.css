@@ -1,0 +1,103 @@
+/* Monospaced budget surface; no change to financial data or calculations. */
+html[data-theme=dark]:has(.budget-home){--ink:#e3e9e5;--muted:#97a49d;--green:#bcf49b;--line:#303a34;--soft:#1c2420;--sage:#222e25;--surface:#171e1a;--canvas:#101613}
+body:has(.budget-home),body:has(.budget-home) :is(button,input,select,textarea){font-family:var(--terminal-mono)}
+body:has(.budget-home) .sidebar nav button{font-family:var(--terminal-mono)}
+html[data-theme=dark] body:has(.budget-home) .sidebar{background:#121915}
+html[data-theme=dark] body:has(.budget-home) .sidebar nav button.active{color:var(--green);background:#202e23}
+html[data-theme=dark] body:has(.budget-home) .mobile-nav button.active{color:var(--green);background:#202e23}
+.budget-home .intro{display:none}
+.budget-home .screen-location{font-size:12px}
+.budget-home>footer{max-width:620px;margin:32px auto 0;opacity:.8}
+.budget-focus{max-width:620px;margin:36px auto 0}
+.focus-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px}
+.focus-heading h1{display:flex;align-items:center;gap:10px;margin:0;font-size:18px;font-weight:500;letter-spacing:-.5px}
+.focus-heading h1 svg{color:var(--green)}
+.focus-heading>span{font-size:10px;color:var(--muted);letter-spacing:1px}
+.focus-month{display:flex;align-items:center;justify-content:center;gap:16px}
+.focus-month span{text-transform:uppercase;letter-spacing:1px;font-size:11px;min-width:140px;text-align:center}
+.focus-month button{display:grid;place-items:center;width:44px;height:44px;border-radius:4px;color:var(--muted)}
+.focus-month button:hover{background:var(--soft);color:var(--ink)}
+.focus-balance{text-align:center;padding:20px 0 30px}
+.focus-balance>span{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted)}
+.focus-balance output{display:block;font-size:clamp(32px,6vw,56px);font-weight:400;letter-spacing:-3px;line-height:1.2;margin:18px 0 10px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;color:var(--green)}
+.focus-balance output.negative{color:#d77968}
+.focus-balance p{font-size:12px;margin:12px 0 0}
+.focus-explainer{max-width:360px;margin:auto}
+.focus-explainer summary{display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px;font-size:11px;color:var(--muted);cursor:pointer;list-style:none}
+.focus-explainer summary::-webkit-details-marker{display:none}
+.focus-explainer[open]{padding-bottom:8px}
+.focus-explainer p{font-size:12px;line-height:1.7;margin-top:0}
+.focus-steps{border-top:1px solid var(--line)}
+.focus-step{border-bottom:1px solid var(--line)}
+.focus-step>summary{list-style:none;display:flex;align-items:center;gap:13px;min-height:68px;cursor:pointer;padding:16px 0}
+.focus-step summary::-webkit-details-marker{display:none}
+.focus-step summary>span:nth-child(2){flex:1}
+.focus-step summary strong,.focus-step-heading h2{font-size:13px;font-weight:500;margin:0;display:block}
+.focus-step summary small,.focus-step-heading p{font-size:12px;color:var(--muted);display:block;margin:6px 0 0;line-height:1.5}
+.focus-step summary>svg{color:var(--muted);transition:transform .15s}
+.focus-step[open] summary>svg{transform:rotate(45deg)}
+.focus-step-number{border:1px solid var(--line);width:30px;height:30px;display:grid;place-items:center;border-radius:4px;color:var(--muted);flex-shrink:0}
+.focus-entry{padding:18px 0 8px;border-bottom:1px solid var(--line)}
+.focus-step-heading{display:flex;align-items:center;gap:15px}
+.focus-add{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.focus-add button{min-height:56px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;border:1px solid var(--line);border-radius:5px;background:var(--surface)}
+.focus-add button:first-child{color:var(--green)}
+.focus-add button:last-child{background:var(--green);color:var(--canvas);border-color:var(--green)}
+.focus-add button:hover{filter:brightness(.9)}
+.focus-import{display:flex;align-items:center;justify-content:center;gap:8px;font-size:11px;margin:6px auto 0;min-height:44px;color:var(--muted)}
+.focus-detail{padding:0 0 24px}
+.focus-detail h2{font-size:15px;font-weight:500;margin:24px 0 12px}
+.focus-help{font-size:13px;line-height:1.65;color:var(--muted);margin:0 0 20px}
+.focus-breakdown{margin:0}
+.focus-breakdown>div{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.focus-breakdown dd{margin:0;white-space:nowrap;font-variant-numeric:tabular-nums}
+.focus-breakdown+.focus-help{margin-top:14px}
+.focus-transactions button{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left;gap:12px;padding:17px 0;border-bottom:1px solid var(--line);font-size:14px}
+.focus-transactions button>span:first-child{min-width:0}
+.focus-transactions strong{display:block;font-size:14px;font-weight:500;overflow-wrap:anywhere}
+.focus-transactions small{display:block;color:var(--muted);font-size:12px;margin-top:6px}
+.focus-transactions button>span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.focus-positive{color:var(--green)}
+.focus-history{display:flex;gap:8px;align-items:center;min-height:48px;font-size:14px;margin-top:12px}
+.budget-focus :is(button,summary):focus-visible{outline:2px solid var(--green);outline-offset:4px}
+.budget-focus button:disabled{opacity:.65;cursor:default}
+.focus-mobile-transactions,.focus-mobile-import{display:none}
+@media(max-width:650px){.budget-home.main{padding-left:22px;padding-right:22px}.budget-focus{margin-top:24px}.focus-heading{margin-bottom:18px}.focus-heading h1{font-size:16px}.focus-heading>span{font-size:9px}.focus-balance{padding:16px 0 24px}.focus-balance output{font-size:clamp(27px,7.5vw,44px);letter-spacing:-1.8px}.focus-step>summary{min-height:64px}.focus-transactions button{font-size:12px}.focus-transactions strong{font-size:13px}}
+@media(max-width:650px){
+ .budget-home.main{padding:0 16px calc(86px + env(safe-area-inset-bottom))}
+ .budget-home .topbar{height:56px}
+ .budget-home>footer{display:none}
+ .budget-focus{display:flex;flex-direction:column;margin-top:8px}
+ .focus-heading,.focus-step-heading{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .focus-month{gap:10px}
+ .focus-month span{font-size:11px}
+ .focus-balance{padding:12px 0 4px}
+ .focus-balance output{font-size:clamp(26px,9vw,44px);letter-spacing:-2px;margin:12px 0 0}
+ .focus-balance>span{font-size:10px}
+ .focus-balance p{font-size:11px}
+ .focus-explainer summary{min-height:40px;font-size:10px}
+ .focus-steps{display:contents}
+ .focus-entry{order:1;border:0;padding:8px 0 18px}
+ .focus-add{margin:0;gap:10px}
+ .focus-add button{min-height:52px;font-size:13px}
+ .focus-entry .focus-import{display:none}
+ .focus-mobile-transactions{display:block;order:2;margin-bottom:20px}
+ .focus-mobile-transactions>header{display:flex;align-items:center;justify-content:space-between;min-height:44px;border-bottom:1px solid var(--line);gap:10px}
+ .focus-mobile-transactions h2{font-size:12px;font-weight:500;margin:0}
+ .focus-mobile-transactions>header button{font-size:11px;color:var(--muted);min-height:44px;min-width:64px}
+ .focus-mobile-transactions>.focus-help{margin:0;padding:20px 0;font-size:12px}
+ .focus-mobile-row{display:flex;align-items:center;border-bottom:1px solid var(--line);gap:4px;min-width:0}
+ .focus-mobile-edit{display:flex;align-items:center;justify-content:space-between;flex:1;min-width:0;gap:8px;padding:13px 0;text-align:left;min-height:64px}
+ .focus-mobile-edit>span:first-child{min-width:0}
+ .focus-mobile-edit strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:500}
+ .focus-mobile-edit small{display:block;font-size:10px;margin-top:5px}
+ .focus-mobile-edit>span:last-child{font-size:11px;white-space:nowrap;font-variant-numeric:tabular-nums}
+ .focus-mobile-delete{width:44px;min-width:44px;min-height:48px;display:grid;place-items:center;color:var(--muted);border-radius:4px}
+ .focus-mobile-delete:hover{color:#d77968;background:var(--soft)}
+ .focus-step{order:3}
+ .focus-step>summary{min-height:52px;padding:10px 0}
+ .focus-step-number{border:0;width:22px;height:26px}
+ .focus-step summary strong{font-size:12px;color:var(--muted)}
+ .focus-mobile-import{display:flex;align-items:center;gap:8px;min-height:44px;font-size:12px;color:var(--green)}
+ .focus-desktop-history{display:none}
+}

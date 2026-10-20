@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 56" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Budget OS</title>
+  <g transform="translate(4 8)" stroke="#294b3b" stroke-width="2.6" stroke-linecap="round">
+    <path d="M34 20a14 14 0 1 1-14-14"/>
+    <path d="M14 16.5h12m-12 7h12"/>
+    <circle cx="31" cy="9" r="3" fill="#294b3b" stroke="none"/>
+  </g>
+  <text x="58" y="36" fill="#17231c" font-family="SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="500" letter-spacing="-1.25">budget</text>
+  <text x="163" y="36" fill="#294b3b" font-family="SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="500" letter-spacing="1.5">OS</text>
+</svg>

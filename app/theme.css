@@ -1,0 +1,56 @@
+:root{color-scheme:light;--chart-base:#7c897b;--chart-scenario:#284e3e}
+html[data-theme=dark]{color-scheme:dark;--ink:#e6ece8;--muted:#a6b3ab;--green:#b2d298;--line:#35433c;--soft:#202b25;--sage:#243629;--orange:#e8b879;--surface:#19231e;--canvas:#111914;--chart-base:#91a8b7;--chart-scenario:#b2d298;background:var(--canvas)}
+.theme-toggle{min-width:44px;min-height:44px;border:1px solid var(--line);color:var(--ink)}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.login-theme{position:absolute;top:20px;right:24px}
+.chart-legend i{border-color:var(--chart-base)}
+.chart-legend i.dark{border-color:var(--chart-scenario)}
+html[data-theme=dark] body{background:var(--canvas);color:var(--ink)}
+html[data-theme=dark] .sidebar{background:#16201b}
+html[data-theme=dark] .sidebar nav button{color:var(--muted)}
+html[data-theme=dark] .sidebar nav button:hover{background:var(--soft)}
+html[data-theme=dark] .sidebar nav button.active{background:var(--sage);color:var(--green)}
+html[data-theme=dark] .sidebar nav small{background:#354b35;color:#d5e8c6}
+html[data-theme=dark] :is(.sidenote,.avatar,.tile.olive,.badge){background:var(--sage);color:var(--green)}
+html[data-theme=dark] :is(.sidenote p,.hero .eyebrow,.hero p){color:#afbeac}
+html[data-theme=dark] .privacy{background:var(--soft);color:var(--muted)}
+html[data-theme=dark] .btn{background:var(--green);color:#142014;border-color:var(--green)}
+html[data-theme=dark] .btn.light{background:var(--surface);color:var(--ink);border-color:#53655a}
+html[data-theme=dark] .hero{background:#213023;border-color:#40543b}
+html[data-theme=dark] .ring{background:conic-gradient(var(--green) var(--progress),#41533c 0)}
+html[data-theme=dark] .ring:before{background:#213023}
+html[data-theme=dark] .heroicon{color:#9bb38f}
+html[data-theme=dark] :is(.panel,dialog,.modalhead){background:var(--surface);box-shadow:none}
+html[data-theme=dark] :is(.taskrow,.budgetrow,.transaction,.importlist .split){border-color:var(--line)}
+html[data-theme=dark] :is(.taskrow:hover,.budgetrow:not(:disabled):hover,.transaction:hover){background:var(--soft)}
+html[data-theme=dark] .tile{background:#29343c;color:#bdcbd4}
+html[data-theme=dark] .tile.cream{background:#3b3225;color:#e4c18b}
+html[data-theme=dark] .badge.warning{background:#3b3021;color:#edc68e}
+html[data-theme=dark] :is(.notice,.warningtext){background:#342c20;border-color:#655139;color:#f0cf9d}
+html[data-theme=dark] .notice.danger{background:#3e2625;border-color:#81504a;color:#ffc0b6}
+html[data-theme=dark] .note{background:var(--soft)}
+html[data-theme=dark] :is(.note>svg,.empty>svg,.goal>svg){color:var(--green)}
+html[data-theme=dark] :is(input,select,textarea){background:#131d17;color:var(--ink);border-color:#586a5e}
+html[data-theme=dark] .search input{background:transparent}
+html[data-theme=dark] input::placeholder,html[data-theme=dark] textarea::placeholder{color:var(--muted);opacity:1}
+html[data-theme=dark] .positive{color:#a4d9b6}
+html[data-theme=dark] .negative{color:#ffb1a6!important}
+html[data-theme=dark] .bar{background:#35433b}
+html[data-theme=dark] .bar i{background:var(--green)}
+html[data-theme=dark] .bar i.over{background:#edbf7b}
+html[data-theme=dark] .simulation{background:var(--sage)}
+html[data-theme=dark] .eventdot{background:var(--green)}
+html[data-theme=dark] footer{color:var(--muted)}
+html[data-theme=dark] dialog::backdrop{background:#050b08b3}
+html[data-theme=dark] .toast{background:#cee3bc;color:#182719;box-shadow:0 8px 35px #0006}
+html[data-theme=dark] .deletebtn{color:#ffb1a6}
+html[data-theme=dark] .btn.dangerbtn{background:#963d35;border-color:#da8e83;color:#fff}
+html[data-theme=dark] .priority-summary{border-color:#40543b}
+html[data-theme=dark] .expense-group.essential{background:#1e2d22}
+html[data-theme=dark] .budgetrow.priority-row{border-left-color:var(--green)}
+html[data-theme=dark] .priority-label{color:var(--green)}
+html[data-theme=dark] .budgetrow.priority-row:not(:disabled):hover{background:var(--sage)}
+html[data-theme=dark] .segmented button[aria-pressed=true]{background:#334536;color:#d1e5bf;box-shadow:none}
+html[data-theme=dark] ::selection{background:#b2d298;color:#142014}
+@media(max-width:650px){html[data-theme=dark] .sidebar{background:#16201bf2}}
+@media(max-width:380px){.topbar .privacy{display:none}}

@@ -1,0 +1,26 @@
+'use client';
+import { Plus, Pencil, ShieldCheck } from 'lucide-react';
+import { type Budget, kr, totals } from '../lib/budget';
+import ExpenseList from './expense-list';
+
+export default function SimpleBudget({data,editable,onIncome,onExpense}:{data:Budget;editable:boolean;onIncome:(item?:Budget['incomes'][number])=>void;onExpense:(item?:Budget['expenses'][number])=>void}) {
+ const t=totals(data);
+ return <div className="simple-budget" id="budget-details">
+  <section className="budget-result" aria-label="Månadsbudgetens resultat">
+   <div><span>Kvar enligt budget</span><strong className={t.remaining<0?'negative':''}>{kr(t.remaining)}</strong></div>
+   <dl><div><dt>Inkomster</dt><dd>{kr(t.income)}</dd></div><div><dt>Kostnader</dt><dd>− {kr(t.expenses)}</dd></div></dl>
+   <p>Planerade inkomster minus planerade kostnader. Sparande och poster du har valt bort är inte avdragna.</p>
+  </section>
+  <section className="panel budget-step" aria-labelledby="income-heading">
+   <header className="step-heading"><span className="step-number" aria-hidden="true">1</span><div><h2 id="income-heading">Inkomster</h2><p>Efter skatt, per månad</p></div><strong>{kr(t.income)}</strong></header>
+   {data.incomes.length?data.incomes.map(item=><button key={item.id} className="budgetrow" disabled={!editable} aria-label={`Ändra inkomst: ${item.name}`} onClick={()=>onIncome(item)}><span><strong>{item.name}</strong></span><strong>{kr(item.amount)}</strong>{editable&&<span className="row-edit"><Pencil size={15}/><span>Ändra</span></span>}</button>):<p className="budget-empty">Lägg till lön, bidrag eller annan återkommande inkomst.</p>}
+   {editable&&<div className="step-action"><button className="btn light full" onClick={()=>onIncome()}><Plus size={18}/> Lägg till inkomst</button></div>}
+  </section>
+  <section className="panel budget-step" aria-labelledby="expense-heading">
+   <header className="step-heading"><span className="step-number" aria-hidden="true">2</span><div><h2 id="expense-heading">Kostnader</h2><p>Vad du planerar att lägga per månad</p></div><strong>{kr(t.expenses)}</strong></header>
+   {editable&&<div className="step-action"><button className="btn light full" onClick={()=>onExpense()}><Plus size={18}/> Lägg till kostnad</button></div>}
+   {data.expenses.length?<ExpenseList expenses={data.expenses} editable={editable} onEdit={onExpense}/>:<p className="budget-empty">Börja med boende, mat, el och försäkring.</p>}
+  </section>
+  <p className="budget-help"><ShieldCheck size={16}/> Ändringar här uppdaterar din budget. Kvar-beloppet på startsidan ändras när du lägger till eller ändrar transaktioner.</p>
+ </div>;
+}

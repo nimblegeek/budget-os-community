@@ -1,0 +1,82 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createElement} from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {emptyBudget,budgetSchema,totals} from '../lib/budget.ts';
+import {revenueSummary,assignIncomeSources,shareGroups} from '../lib/revenue.ts';
+import {yearToDate,previousYearRange,periodSummary} from '../lib/date-range.ts';
+import {removeRecord} from '../lib/records.ts';
+import {createCommands,searchCommands} from '../lib/commands.ts';
+import RevenueFocus from '../app/revenue-focus.tsx';
+const range={from:'2026-10-01',to:'2026-10-31'};
+const source=(id,type='Samarbeten',channel='X')=>({id,name:'Källa '+id,type,channel,monthlyTarget:1000,notes:'Test',archived:false});
+const tx=(id,amount,kind='income',sourceId,date='2026-10-20')=>({id,date,description:id,amount,kind,category:'Test',reviewed:false,excluded:true,source:'test.csv',...(sourceId?{incomeSourceId:sourceId}:{})});
+const fixture=()=>({...emptyBudget,incomes:[{id:'plan',name:'Månadsplan',amount:9000}],revenueSources:[source('a'),source('b','Affiliate','Instagram')],transactions:[tx('a1',100.01,'income','a'),tx('a2',10.02,'income','a'),tx('b1',50,'income','b'),tx('unknown',20),tx('refund',40,'expense'),tx('transfer',600,'transfer'),tx('outside',700,'income','a','2026-09-30')]});
+test('Actual source totals reconcile with budget actual income, not plans, expense refunds or transfers',()=>{
+ const data=fixture(),before=structuredClone(data),summary=revenueSummary(data,range);
+ assert.equal(summary.total,180.03);assert.equal(summary.total,periodSummary(data.transactions,range).income);
+ assert.equal(summary.sourceStats[0].amount,110.03);assert.equal(summary.unassigned.length,1);
+ assert.equal(Math.round(summary.groups.reduce((n,g)=>n+g.amount,0)*100),18003);
+ assert.ok(Math.abs(summary.groups.reduce((n,g)=>n+g.share,0)-100)<1e-10);
+ assert.deepEqual(data,before);assert.equal(totals(data).income,9000);
+ for(const grouping of ['type','channel','source'])assert.equal(revenueSummary(data,range,grouping).total,180.03);
+});
+test('Reassigning, unlinking, archiving and deleting source profiles preserve every cash-flow field',()=>{
+ const data=fixture(),original=structuredClone(data);
+ const linked=assignIncomeSources(data,['unknown','a1','unknown'],'b');
+ assert.equal(linked.transactions.find(t=>t.id==='unknown').incomeSourceId,'b');
+ assert.equal(revenueSummary(linked,range).total,revenueSummary(data,range).total);
+ assert.deepEqual(linked.incomes,data.incomes);assert.equal(linked.transactions.length,data.transactions.length);
+ const unlinked=assignIncomeSources(linked,['unknown'],null);assert.ok(!('incomeSourceId' in unlinked.transactions.find(t=>t.id==='unknown')));
+ const archived={...linked,revenueSources:linked.revenueSources.map(s=>({...s,archived:true}))};
+ assert.equal(budgetSchema.safeParse(archived).success,true);
+ assert.equal(revenueSummary(archived,range).total,180.03);
+ assert.throws(()=>assignIncomeSources(archived,['unknown'],'b'),/aktiv/);
+ const removed=removeRecord(linked,'revenueSources','b');
+ assert.equal(removed.revenueSources.length,1);
+ const strip=rows=>rows.map(({incomeSourceId,...rest})=>rest);
+ assert.deepEqual(strip(removed.transactions),strip(data.transactions));
+ assert.deepEqual(data,original);assert.throws(()=>assignIncomeSources(data,['refund'],'a'),/inbetalningar/);
+ assert.throws(()=>assignIncomeSources(data,['missing'],'a'),/inbetalningar/);
+ assert.throws(()=>assignIncomeSources(data,['a1'],'missing'),/aktiv/);
+});
+test('Historical source references are validated; optional fields preserve old backup shape',()=>{
+ assert.deepEqual(budgetSchema.parse(emptyBudget),emptyBudget);
+ const data=fixture();
+ assert.equal(budgetSchema.safeParse({...data,transactions:[tx('dangling',10,'income','missing')]}).success,false);
+ assert.equal(budgetSchema.safeParse({...data,transactions:[tx('wrong',10,'expense','a')]}).success,false);
+ assert.equal(budgetSchema.safeParse({...data,revenueSources:[{...source('a'),monthlyTarget:-1}]}).success,false);
+});
+test('Negative source net amounts never produce misleading pie shares; empty and zero avoid NaN',()=>{
+ const data={...fixture(),transactions:[tx('reversal',-150,'income','a'),tx('positive',200,'income','b')]};
+ const summary=revenueSummary(data,range);
+ assert.equal(summary.total,50);assert.equal(summary.hasNegative,true);assert.ok(summary.groups.every(g=>g.share===null));
+ assert.equal(revenueSummary({...data,transactions:[]},range).total,0);
+ assert.equal(revenueSummary({...data,transactions:[tx('zero',0)]},range).groups[0].share,null);
+});
+test('Year and overlapping ranges include exact boundaries and handle previous years',()=>{
+ assert.deepEqual(yearToDate('2026-01-01'),{from:'2026-01-01',to:'2026-01-01'});
+ assert.deepEqual(previousYearRange('2026-01-01'),{from:'2025-01-01',to:'2025-12-31'});
+ assert.throws(()=>yearToDate('2026-02-30'));
+ const data=fixture();assert.equal(revenueSummary(data,{from:'2026-09-30',to:'2026-10-20'}).total,880.03);
+});
+test('Share image grouping includes all values when source count exceeds eight',()=>{
+ const groups=Array.from({length:20},(_,i)=>({id:String(i),label:String(i),amount:10.01,count:1,share:5,color:'#aaa'}));
+ const result=shareGroups(groups);
+ assert.equal(result.length,8);assert.equal(result[7].amount,130.13);assert.equal(result[7].share,65);
+ assert.equal(result.reduce((n,g)=>n+g.count,0),20);
+});
+test('Revenue UI read-only and empty states expose no write actions; source search respects role',()=>{
+ const noop=()=>{},data=fixture();
+ const props={data,range,editable:false,busy:false,onRange:noop,onAddSource:noop,onEditSource:noop,onDeleteSource:noop,onAddIncome:noop,onEditTransaction:noop,onAssign:async()=>{}};
+ const html=renderToStaticMarkup(createElement(RevenueFocus,props));
+ assert.ok(html.includes('Registrerade inbetalningar'));assert.ok(html.includes('Ej kopplade'));assert.ok(html.includes('Spara bild'));
+ assert.ok(!html.includes('Ta bort källa:'));assert.ok(!html.includes('Ändra källa:'));assert.ok(!html.includes('>Ny källa<'));
+ const editable=renderToStaticMarkup(createElement(RevenueFocus,{...props,editable:true}));
+ assert.ok(editable.includes('Ta bort källa: Källa a'));assert.ok(editable.includes('Ändra källa: Källa a'));
+ const empty=renderToStaticMarkup(createElement(RevenueFocus,{...props,data:emptyBudget,editable:true}));
+ assert.ok(empty.includes('Lägg till din första källa'));assert.ok(!empty.includes('NaN'));
+ assert.ok(searchCommands(createCommands(data,false),'instagram').some(i=>i.recordKind==='revenueSources'));
+ assert.ok(!createCommands(data,false).some(i=>i.kind==='action'));
+ assert.ok(createCommands(data,true).some(i=>i.action==='revenue-source'));
+});
