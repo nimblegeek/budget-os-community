@@ -72,9 +72,37 @@ const render=(debts,extra=0,editable=true)=>renderToStaticMarkup(createElement(D
 test('Debt playground exposes keyboard-accessible controls, comparison graph and milestones without a save action',()=>{
  const debts=[uiLoan],before=structuredClone(debts),html=render(debts),extra=render(debts,1000);
  for(const text of ['Din väg till noll.','Extra betalning per månad','Räntesänkning i procentenheter','Utforska prognosmånad','Skuldprognos:','25% betalt','Skuldfri','Inget sparas.','Återställ skuldsimulering'])assert.ok(html.includes(text),text);
- assert.equal((html.match(/type="range"/g)||[]).length,3);
+ assert.equal((html.match(/type="range"/g)||[]).length,4);
  assert.ok(!html.includes('Spara scenario'));assert.notEqual(html,extra);assert.deepEqual(debts,before);
  assert.ok(render(debts,0,false).includes('Reglage för räntesänkning'),'Viewer can simulate without editing');
+});
+test('Lump sum is paid once at month zero, before interest, and combines with monthly extra',()=>{
+ const debts=[loan('a',10000,1000,12)],copy=structuredClone(debts);
+ const result=projectDebts(debts,500,'avalanche',600,2500);
+ assert.equal(result.points[0].balance,7500);assert.equal(result.points[1].balance,6075);
+ const comparison=compareDebtScenario(debts,500,2,'avalanche',2500);
+ assert.equal(comparison.base.points[0].balance,10000);assert.equal(comparison.scenario.points[0].balance,7500);
+ assert.equal(comparison.lumpSumApplied,2500);assert.equal(comparison.balanceAfterLumpSum,7500);
+ assert.ok(comparison.interestSaved>0);assert.ok(comparison.monthsSaved>0);assert.deepEqual(debts,copy);
+});
+test('Immediate payoff caps at selected debt, never creates negative balances and charges no future interest',()=>{
+ const debts=[loan('a',100.01,10,12),loan('closed',0,50,15),loan('home',900000,2000,null,'Bolån')];
+ const result=compareDebtScenario(debts,0,0,'avalanche',1000);
+ assert.equal(result.scenario.months,0);assert.equal(result.scenario.interest,0);
+ assert.deepEqual(result.scenario.points,[{month:0,balance:0}]);
+ assert.equal(result.lumpSumApplied,100.01);assert.equal(result.lumpSumUnused,899.99);assert.equal(result.balanceAfterLumpSum,0);
+ assert.equal(projectionBalanceAt(result.scenario,60),0);
+ assert.ok(projectDebts(debts,0,'avalanche',600,-1).error);assert.ok(projectDebts(debts,0,'avalanche',600,Infinity).error);
+ assert.throws(()=>compareDebtScenario(debts,0,0,'avalanche',NaN));
+});
+test('Lump sum respects chosen priority and retains the original monthly budget after an upfront payoff',()=>{
+ const debts=[loan('small',1000,100,0),loan('costly',5000,100,24)];
+ const avalanche=projectDebts(debts,0,'avalanche',600,1000),snowball=projectDebts(debts,0,'snowball',600,1000);
+ assert.equal(avalanche.points[0].balance,5000);assert.equal(avalanche.points[1].balance,4880);
+ assert.equal(snowball.points[1].balance,4900,'Both original monthly payments must be available, even after the small loan was paid upfront');
+ assert.ok(avalanche.interest<snowball.interest);
+ assert.deepEqual(projectDebts(debts,0,'avalanche',600,0),projectDebts(debts));
+ const cents=projectDebts([loan('c',10.02,1,0)],0,'avalanche',600,0.01);assert.equal(cents.points[0].balance,10.01);
 });
 test('Empty, mortgage-only and missing-rate UI never fabricates a payoff graph or edits for a viewer',()=>{
  assert.ok(render([]).includes('Lägg till ett lån'));assert.ok(!render([]).includes('Skuldprognos:'));

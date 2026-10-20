@@ -5,6 +5,11 @@
 .debt-lab-reset{display:flex;align-items:center;gap:7px;color:var(--muted);min-height:44px;font-size:11px}
 .debt-lab-scope{font-size:10px;color:var(--muted);margin:0 0 24px;line-height:1.7}
 .debt-lab-controls{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+.debt-lab-upfront{grid-column:1/-1;padding-bottom:20px;border-bottom:1px solid var(--line)}
+.debt-lab-upfront>label{flex-direction:row!important;align-items:center;justify-content:space-between;gap:12px}
+.debt-lab-upfront-result{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:11px;line-height:1.8;margin:16px 0 6px;color:var(--muted);flex-wrap:wrap}
+.debt-lab-upfront-result strong{color:var(--green);font-weight:500;font-size:16px;overflow-wrap:anywhere}
+.debt-lab-upfront-note{display:block;font-size:10px;line-height:1.8}
 .debt-lab-control>label{display:flex;flex-direction:column;gap:10px;font-size:11px;color:var(--muted)}
 .debt-lab-control>label>span{display:flex;align-items:baseline;gap:6px;color:var(--ink)}
 .debt-lab-control input[type=number]{width:135px;max-width:75%;padding:7px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;font:inherit;font-size:24px;letter-spacing:-1px;color:var(--ink);min-height:44px}

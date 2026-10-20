@@ -1,0 +1,42 @@
+.cost-picker{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:22px;margin:20px 0 6px;min-width:0}
+.cost-picker>header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cost-picker-kicker{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted)}
+.cost-picker h2{font-size:20px;font-weight:500;letter-spacing:-.8px;margin:10px 0}
+.cost-picker-reset{display:grid;place-items:center;min-width:44px;min-height:44px;color:var(--muted)}
+.cost-picker-help{font-size:11px!important;color:var(--muted);line-height:1.8;margin:4px 0 18px}
+.cost-picker-presets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.cost-picker-presets button{display:grid;gap:6px;text-align:left;padding:11px 9px;min-height:62px;border:1px solid var(--line);border-radius:5px;font-size:11px;color:var(--muted)}
+.cost-picker-presets small{font-size:10px;overflow-wrap:anywhere}
+.cost-picker-presets button[aria-pressed=true]{color:var(--green);border-color:var(--green);background:var(--soft)}
+.cost-picker-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin:24px 0}
+.cost-picker-result span,.cost-picker-result small{display:block;color:var(--muted);font-size:10px;line-height:1.8}
+.cost-picker-result strong{display:block;font-size:clamp(20px,2.5vw,28px);font-weight:500;letter-spacing:-.8px;margin:8px 0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.cost-picker-result>div:last-child strong{color:var(--green)}
+.cost-picker-result strong.negative{color:#d77968!important}
+.cost-picker-comparison{display:grid;gap:9px;margin:0 0 24px;font-size:10px;color:var(--muted)}
+.cost-picker-comparison>div:not(.cost-picker-track){display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.cost-picker-comparison strong{font-weight:400;color:var(--ink)}
+.cost-picker-track{height:5px;background:var(--line);border-radius:3px;overflow:hidden}
+.cost-picker-track i{display:block;height:100%;background:var(--green);transition:width .2s ease}
+.cost-picker-group{border-top:1px solid var(--line)}
+.cost-picker-group-head{display:flex;gap:6px;align-items:center;min-width:0}
+.cost-picker-group-head>label{display:flex;align-items:center;gap:10px;min-width:0;flex:1;min-height:68px;cursor:pointer;font-size:12px}
+.cost-picker-group-head>label>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.cost-picker-group-head strong{font-size:12px;font-weight:500;min-width:0;max-width:45%;text-align:right;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.cost-picker-group-head small{display:block;font-size:9px;color:var(--muted);font-weight:400;margin-top:6px}
+.cost-picker-group-head>button{display:grid;place-items:center;min-width:40px;min-height:44px;color:var(--muted)}
+.cost-picker-group-head>button[aria-expanded=true] svg{transform:rotate(180deg)}
+.cost-picker input[type=checkbox]{width:18px;height:18px;flex-shrink:0;accent-color:var(--green);cursor:pointer;margin:0}
+.cost-picker-items{padding:0 0 10px 28px}
+.cost-picker-items>label{display:flex;align-items:center;gap:9px;min-height:52px;font-size:11px;cursor:pointer}
+.cost-picker-items>label>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.cost-picker-items strong{font-size:11px;font-weight:400;max-width:45%;overflow-wrap:anywhere;text-align:right}
+.cost-picker-items small{display:block;color:var(--green);font-size:9px;margin-top:4px}
+.cost-picker-boundary{margin:20px 0 0}
+.cost-picker-method{margin-top:8px}
+.cost-picker-method summary{cursor:pointer;font-size:10px;color:var(--muted);min-height:44px;display:flex;align-items:center;justify-content:space-between}
+.cost-picker-method summary::after{content:'+';font-size:16px}
+.cost-picker-method[open] summary::after{content:'−'}
+.cost-picker-method p{font-size:10px;line-height:1.8;color:var(--muted);margin:0}
+@media(max-width:650px){.cost-picker{padding:18px 14px;margin-top:14px}.cost-picker h2{font-size:21px}.cost-picker-presets{grid-template-columns:repeat(2,minmax(0,1fr))}.cost-picker-presets button{min-height:62px;display:grid;gap:6px;font-size:11px}.cost-picker-result{grid-template-columns:1fr;gap:16px}.cost-picker-result strong{font-size:20px}.cost-picker-group-head>label{font-size:11px;gap:8px}.cost-picker-group-head strong{font-size:11px}.cost-picker-items{padding-left:12px}.cost-picker-items strong{font-size:10px}.cost-picker-group-head>button{min-width:32px}}
+@media(prefers-reduced-motion:reduce){.cost-picker *{transition:none!important}}

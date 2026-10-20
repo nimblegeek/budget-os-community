@@ -5,6 +5,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import SimpleBudget from '../app/simple-budget.tsx';
 import RecordFields from '../app/record-fields.tsx';
 import BudgetFocus from '../app/budget-focus.tsx';
+import BudgetCostPicker from '../app/budget-cost-picker.tsx';
 import DebtFocus from '../app/debt-focus.tsx';
 import SavingsFocus from '../app/savings-focus.tsx';
 import AreaHeading from '../app/area-heading.tsx';
@@ -17,6 +18,23 @@ import {areas,mobilePrimary,mobileMore,featureGroups,groupOrder,groupForPage,pag
 import {isSidebarShortcut} from '../lib/sidebar.ts';
 import {emptyBudget,kr} from '../lib/budget.ts';
 const noop=()=>{};
+test('Budget cost picker exposes local grouped checkboxes, selection presets and explicit plan-only results',()=>{
+ const data={...emptyBudget,incomes:[{id:'i',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''},{id:'c',name:'Krediter & blancolån',amount:2000,frame:2000,status:'Ram',note:''}]};
+ const before=structuredClone(data),html=renderToStaticMarkup(createElement(BudgetCostPicker,{data}));
+ for(const text of ['Vad ska få plats?','Prioriterade','Krediter','Ta med kategorin Mat &amp; livsmedel','Ta med kategorin Krediter &amp; lån','Valda kostnader / mån','Kvar enligt urval','15 000,00 kr','Jämförelseläge · inget sparas','Återställ kostnadsurval'])assert.ok(html.includes(text),text);
+ assert.ok(html.includes('type="checkbox"'));assert.ok(!html.includes('Spara urval'));assert.deepEqual(data,before);
+});
+test('Budget cost picker is safe in empty/read-only budgets and explains credit and actual-transaction boundaries',()=>{
+ const html=renderToStaticMarkup(createElement(BudgetCostPicker,{data:emptyBudget}));
+ assert.ok(html.includes('Lägg till månadskostnader under Din budget'));assert.ok(!html.includes('type="checkbox"'));
+ assert.ok(html.includes('lånelistans betalningar läggs inte till igen'));assert.ok(html.includes('det faktiska kvar-beloppet överst på sidan påverkas inte'));
+});
+test('Cost comparison does not replace the true registered-income-minus-expense budget hero',()=>{
+ const range=monthRange(),data={...emptyBudget,incomes:[{id:'p',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''}],transactions:[{id:'t',date:range.from,description:'Utgift',amount:-100,kind:'expense',category:'Mat',source:'Test',reviewed:true,excluded:false}]};
+ const html=renderToStaticMarkup(createElement(BudgetFocus,{data,range,onRange:noop,editable:false,busy:false,onAdd:noop,onEdit:noop,onDelete:noop,onIncome:noop,onExpense:noop,onHistory:noop}));
+ assert.ok(html.includes('Välj och jämför budgetkostnader'));assert.ok(html.includes('17 000,00 kr'));
+ assert.ok(html.includes('>'+kr(-100,2)+'</output>'));assert.ok(!html.includes('Lägg till transaktion</button>'));
+});
 test('Public landing is a separate presentation, links to JAS and explains private access and demo figures honestly',()=>{
  const html=renderToStaticMarkup(createElement(Landing));
  assert.equal((html.match(/<h1/g)||[]).length,1);
