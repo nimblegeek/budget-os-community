@@ -68,6 +68,12 @@ test('Timeline returns paid-off zero but never invents future points for an inco
  assert.equal(projectionBalanceAt({points:[],error:'Missing'},0),null);
 });
 const uiLoan={...loan('a',10000,400,18),name:'Exempellån',original:10000,note:'',balanceVerified:true};
+test('Playground respects the overview strategy for upfront allocation and displayed loan order',()=>{
+ const debts=[{...uiLoan,id:'big',name:'Big',balance:10000,rate:20},{...uiLoan,id:'small',name:'Small',balance:500,rate:0}];
+ const html=renderToStaticMarkup(createElement(DebtPlayground,{debts,extra:0,setExtra:()=>{},editable:true,onEdit:()=>{},strategy:'snowball',setStrategy:()=>{}}));
+ assert.ok(html.includes('value="snowball" selected=""'));assert.ok(html.includes('Minsta skulden först'));
+ assert.ok(html.indexOf('>Small<')<html.indexOf('>Big<'));
+});
 const render=(debts,extra=0,editable=true)=>renderToStaticMarkup(createElement(DebtPlayground,{debts,extra,setExtra:()=>{},editable,onEdit:()=>{}}));
 test('Debt playground exposes keyboard-accessible controls, comparison graph and milestones without a save action',()=>{
  const debts=[uiLoan],before=structuredClone(debts),html=render(debts),extra=render(debts,1000);

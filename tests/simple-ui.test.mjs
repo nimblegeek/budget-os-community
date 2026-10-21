@@ -7,6 +7,7 @@ import RecordFields from '../app/record-fields.tsx';
 import BudgetFocus from '../app/budget-focus.tsx';
 import BudgetCostPicker from '../app/budget-cost-picker.tsx';
 import DebtFocus from '../app/debt-focus.tsx';
+import {debtAttackOrder} from '../lib/debt-order.ts';
 import SavingsFocus from '../app/savings-focus.tsx';
 import AreaHeading from '../app/area-heading.tsx';
 import HomeHub,{GroupHub,PageTrail} from '../app/home-hub.tsx';
@@ -228,6 +229,17 @@ test('Sidebar shortcut supports Cmd/Ctrl+B only on desktop outside editing contr
 });
 const loan=(id,balance,monthly,type='Blanco')=>({id,name:id,balance,monthly,type,original:balance,rate:10,note:'',balanceVerified:true});
 const debtHtml=(debts,props={})=>renderToStaticMarkup(createElement(DebtFocus,{debts,editable:true,busy:false,onAdd:noop,onEdit:noop,onDelete:noop,onCreditors:noop,...props}));
+test('Attack strategies order active consumer debts without mutation and disclose unknown interest',()=>{
+ const debts=[{...loan('Small',500,50),rate:0},{...loan('High',5000,200),rate:25},{...loan('Unknown',200,50),rate:null},loan('Home',100000,1000,'Bolån'),loan('Closed',0,0),{...loan('Tie',1000,100),rate:25}],before=structuredClone(debts);
+ assert.deepEqual(debtAttackOrder(debts,'avalanche').map(d=>d.id),['Tie','High','Small','Unknown']);
+ assert.deepEqual(debtAttackOrder(debts,'snowball').map(d=>d.id),['Unknown','Small','Tie','High']);
+ assert.deepEqual(debts,before);
+ const avalanche=debtHtml(debts),snowball=debtHtml(debts,{strategy:'snowball'});
+ assert.ok(avalanche.indexOf('Ändra lån: Tie')<avalanche.indexOf('Ändra lån: High'));
+ assert.ok(snowball.indexOf('Ändra lån: Unknown')<snowball.indexOf('Ändra lån: Small'));
+ assert.ok(avalanche.includes('bland kända räntor'));assert.ok(avalanche.includes('Bolån (1) · utanför attackordningen'));
+ assert.ok(snowball.includes('value="snowball" selected=""'));assert.ok(debtHtml(debts,{editable:false}).includes('Välj attackstrategi'));
+});
 test('Debt overview totals the same active loans including mortgages, retaining closed loans separately',()=>{
  const debts=[loan('Blanco',10000.25,500.5),loan('Bolån',1000000,7000,'Bolån'),loan('Avslutat',0,100)];
  const before=JSON.stringify(debts),html=debtHtml(debts);

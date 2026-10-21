@@ -9,6 +9,12 @@
 .debt-caution{font-size:11px;color:var(--muted);margin:0}
 .debt-add{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;border-radius:5px;background:var(--green);color:var(--canvas);font-size:14px;margin:0 0 20px}
 .loan-list{border-top:1px solid var(--line)}
+.debt-attack{margin:0 0 18px;padding:16px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.debt-attack label{display:grid;gap:10px;font-size:11px;color:var(--muted)}
+.debt-attack select{width:100%;min-width:0;min-height:44px;font:inherit;font-size:13px;background:var(--canvas);color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:10px}
+.debt-attack p{font-size:11px;color:var(--muted);line-height:1.7;margin:12px 0 0}
+.loan-rank{font-size:11px;color:var(--green);min-width:20px;font-variant-numeric:tabular-nums}
+.loan-edit .loan-next{color:var(--green)}
 .loan-row{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
 .loan-edit{display:flex;align-items:center;justify-content:space-between;gap:16px;flex:1;min-width:0;text-align:left;padding:20px 0;min-height:76px}
 .loan-edit>span:first-child{min-width:0;flex:1}

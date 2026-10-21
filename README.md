@@ -18,6 +18,9 @@ Community source: [nimblegeek/budget-os-community](https://github.com/nimblegeek
 - Interactive debt playground: immediate one-off payments, live monthly extra-payment/rate-reduction controls,
   baseline comparison, a monthly timeline, interest/time savings and payoff
   milestones. Mortgage loans are excluded; scenarios never edit stored finances.
+  Choose avalanche (highest nominal interest first) or snowball (lowest balance
+  first) in the debt overview. Ranked loans and the simulator share the strategy;
+  mortgages remain separate and unknown rates are explicitly flagged.
 - Budget cost picker: select individual planned expenses or entire suggested
   categories, compare priority costs and consumer-credit payments, and see the
   planned remainder change. Actual transactions and saved budgets stay unchanged.
