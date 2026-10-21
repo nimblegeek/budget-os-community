@@ -16,8 +16,9 @@ type Props = {
  onExpense: (item?: Budget['expenses'][number]) => void;
  onHistory: (kind?: 'income' | 'expense') => void;
  planRequested?: number; children?: React.ReactNode;
+ persist?: (data:Budget,action:string)=>Promise<void>;
 };
-export default function BudgetFocus({data,range,onRange,editable,busy,onAdd,onEdit,onDelete,onIncome,onExpense,onHistory,planRequested=0,children}:Props) {
+export default function BudgetFocus({data,range,onRange,editable,busy,onAdd,onEdit,onDelete,onIncome,onExpense,onHistory,planRequested=0,children,persist}:Props) {
  const [showAll,setShowAll]=useState(false),[planOpen,setPlanOpen]=useState(false);
  const planRef=useRef<HTMLDetailsElement>(null);
  useEffect(()=>setShowAll(false),[range.from,range.to]);
@@ -59,7 +60,7 @@ export default function BudgetFocus({data,range,onRange,editable,busy,onAdd,onEd
    <summary><span className="focus-step-number" aria-hidden="true"><SlidersHorizontal size={17}/></span><span><strong>Din budget</strong><small>{data.incomes.length||data.expenses.length?kr(plan.remaining)+' kvar enligt planen':'Planera inkomster och kostnader'}</small></span><Plus size={17} aria-hidden="true"/></summary>
    <div className="focus-detail"><p className="focus-help">Här bestämmer du vad du räknar med att få in och vad månaden får kosta. Ändra en rad eller lägg till en ny.</p><SimpleBudget data={data} editable={editable&&!busy} onIncome={onIncome} onExpense={onExpense}/>{children}</div>
   </details>
-  <BudgetCostPicker data={data}/>
+  <BudgetCostPicker data={data} editable={editable} busy={busy} persist={persist}/>
   <BudgetComparison income={actual.income} expense={actual.expense} plannedIncome={plan.income} plannedExpense={plan.expenses} isCurrent={isNow} hasTransactions={!!rows.length} onHistory={onHistory} onPlan={showPlan}/>
   <section className="focus-mobile-transactions budget-recent" aria-labelledby="recent-transactions-heading">
    <header><h2 id="recent-transactions-heading">Senaste transaktionerna</h2><button onClick={()=>onHistory()}>Visa alla <ChevronRight size={12}/></button></header>

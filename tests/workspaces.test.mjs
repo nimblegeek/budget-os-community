@@ -7,6 +7,7 @@ import {emptyBudget} from '../lib/budget.ts';
 import {digest,parseBackup} from '../lib/backup.ts';
 import {migrateBudget,readBudget,writeBudget,Conflict} from '../lib/storage.ts';
 import {workspaceIdentity,workspaceSession,writeWorkspaceBudget,workspaceBackup,manageWorkspaceViewer,listWorkspaces,AccessDenied} from '../lib/workspaces.ts';
+import {makeBudgetScenario,putBudgetScenario,removeBudgetScenario} from '../lib/budget-scenarios.ts';
 const alice={userId:'user-alice',email:'alice@example.invalid',displayName:'Alice'};
 const bob={userId:'user-bob',email:'bob@example.invalid',displayName:'Bob'};
 const eve={userId:'user-eve',email:'eve@example.invalid',displayName:'Eve'};
@@ -34,6 +35,23 @@ test('Every verified subject gets one empty private workspace; equal imported ID
  assert.deepEqual((await listWorkspaces(db,alice.userId)).map(w=>w.id),[a.workspaceId]);
  assert.equal((await workspaceIdentity(db,alice,undefined)).workspaceId,a.workspaceId);
  assert.equal((await db.pg.query('SELECT count(*)::int AS count FROM workspaces')).rows[0].count,2);
+});
+test('Saved scenarios persist, update, delete and restore through scoped PostgreSQL JSON snapshots without changing finances',async()=>{
+ const db=await createDB(),a=await workspaceIdentity(db,alice,undefined),b=await workspaceIdentity(db,bob,undefined),base=personalData('Alice');
+ base.expenses=[{id:'food',name:'Mat',amount:100.01,frame:100.01,status:'Ram',note:''}];
+ const scenario=makeBudgetScenario(base,'Bas',[]),saved=putBudgetScenario(base,scenario);
+ await write(db,a,saved);assert.deepEqual((await workspaceSession(db,a)).data,saved);
+ const updated=putBudgetScenario(saved,makeBudgetScenario(saved,'Bara mat',[],scenario));await write(db,a,updated,1);
+ const copy=await workspaceBackup(db,a);assert.deepEqual(await parseBackup(JSON.stringify(copy)),updated);
+ await write(db,a,removeBudgetScenario(updated,scenario.id),2);
+ assert.deepEqual((await workspaceSession(db,a)).data.transactions,base.transactions);assert.deepEqual((await workspaceSession(db,a)).data.budgetScenarios,[]);
+ const historical=(await workspaceSession(db,a)).backups.find(x=>x.revision===2);assert.ok(historical);
+ const restored=await parseBackup(JSON.stringify(await workspaceBackup(db,a,historical.id)));assert.deepEqual(restored,updated);
+ assert.equal((await workspaceSession(db,b)).data.budgetScenarios,undefined);
+ await assert.rejects(workspaceSession(db,{...b,workspaceId:a.workspaceId}),AccessDenied);
+ await manageWorkspaceViewer(db,a,bob.email);const viewer=await workspaceIdentity(db,bob,undefined,a.workspaceId);
+ await assert.rejects(write(db,viewer,updated,3),AccessDenied);
+ await write(db,a,restored,3);assert.deepEqual((await workspaceSession(db,viewer)).data.budgetScenarios,updated.budgetScenarios);
 });
 test('Forged workspace IDs and roles cannot read, write, export backups or invite into another account',async()=>{
  const db=await createDB(),a=await workspaceIdentity(db,alice,undefined),b=await workspaceIdentity(db,bob,undefined);

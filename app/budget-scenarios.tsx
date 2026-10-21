@@ -1,0 +1,37 @@
+'use client';
+import {useRef,useState} from 'react';
+import {Save,Trash2,Columns2} from 'lucide-react';
+import {type Budget,kr,sum} from '../lib/budget';
+import {makeBudgetScenario,putBudgetScenario,removeBudgetScenario,scenarioCostTotals,scenarioSelectionMatches} from '../lib/budget-scenarios';
+import {selectedCostTotals,presetCostIds} from '../lib/cost-selection';
+type Props={data:Budget;excluded:string[];onApply:(excluded:string[])=>void;editable?:boolean;busy?:boolean;persist?:(data:Budget,action:string)=>Promise<void>};
+export default function BudgetScenarios({data,excluded,onApply,editable=false,busy=false,persist}:Props){
+ const [activeId,setActiveId]=useState(''),[form,setForm]=useState(false),[name,setName]=useState(''),[error,setError]=useState(''),[saving,setSaving]=useState(false),[confirmDelete,setConfirmDelete]=useState(false),[compare,setCompare]=useState(false),[notice,setNotice]=useState('');
+ const writing=useRef(false),scenarios=data.budgetScenarios||[],active=scenarios.find(s=>s.id===activeId),pending=busy||saving,canSave=editable&&!!persist;
+ const result=selectedCostTotals(data,excluded),dirty=!!active&&!scenarioSelectionMatches(data,active,excluded),status=active?scenarioCostTotals(data,active):null;
+ function select(id:string){const scenario=scenarios.find(s=>s.id===id);setActiveId(id);if(scenario)onApply(scenarioCostTotals(data,scenario).excluded);setError('');setNotice('');setForm(false);setConfirmDelete(false)}
+ function start(){setForm(true);setError('');setConfirmDelete(false);const priority=presetCostIds(data.expenses,'priority');setName(active?.name||(result.selected.length===priority.length&&result.selected.every(e=>priority.includes(e.id))?'Bara prioriterade':'Mitt scenario'))}
+ async function save(update:boolean){
+  if(!canSave||!persist||pending||writing.current)return;
+  setError('');if(!name.trim()){setError('Ge scenariot ett namn.');return;}
+  if(update&&!active){setError('Välj ett sparat scenario att uppdatera.');return;}
+  writing.current=true;setSaving(true);
+  try{const scenario=makeBudgetScenario(data,name,excluded,update?active:undefined),next=putBudgetScenario(data,scenario);await persist(next,`${update?'Uppdaterade':'Sparade'} budgetscenario: ${scenario.name}`);onApply(scenarioCostTotals(next,scenario).excluded);setActiveId(scenario.id);setForm(false);setNotice('Scenariot är sparat i arbetsytan. Grundbudgeten är oförändrad.');}
+  catch(e){setError(e instanceof Error?e.message:'Scenariot kunde inte sparas.');}finally{writing.current=false;setSaving(false)}
+ }
+ async function remove(){
+  if(!canSave||!persist||!active||pending||writing.current)return;
+  writing.current=true;setSaving(true);setError('');
+  try{await persist(removeBudgetScenario(data,active.id),`Tog bort budgetscenario: ${active.name}`);setActiveId('');setConfirmDelete(false);setForm(false);setNotice('Scenariot är borttaget. Kostnaderna finns kvar; tidigare version finns i säkerhetskopiorna.');}
+  catch(e){setError(e instanceof Error?e.message:'Scenariot kunde inte tas bort.');}finally{writing.current=false;setSaving(false)}
+ }
+ return <section className="budget-scenarios" aria-label="Sparade budgetscenarier">
+  <div className="budget-scenarios-toolbar"><label>Sparat scenario<select aria-label="Välj sparat budgetscenario" value={active?.id||''} disabled={pending} onChange={e=>select(e.target.value)}><option value="">Tillfälligt urval</option>{scenarios.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>{canSave&&<button disabled={pending} onClick={start}><Save size={15} aria-hidden="true"/> Spara urval</button>}</div>
+  <p className="budget-scenarios-status">{active?`${dirty?'Ändrat urval · inte sparat':'Sparat urval'} · beräknat med dagens månadsbelopp.`:scenarios.length?'Välj ett scenario eller skapa ett eget urval.':'Inga sparade scenarier ännu.'}</p>
+  {status&&!!(status.newIds.length||status.missingIds.length)&&<p className="budget-scenarios-warning">{status.newIds.length>0&&`${status.newIds.length} ${status.newIds.length===1?'ny kostnadspost tas':'nya kostnadsposter tas'} inte med automatiskt. `}{status.missingIds.length>0&&`${status.missingIds.length} ${status.missingIds.length===1?'vald post saknas':'valda poster saknas'} eller är utanför budgeten. `}Granska urvalet och uppdatera scenariot om det behövs.</p>}
+  {form&&canSave&&<form className="budget-scenario-form" onSubmit={e=>{e.preventDefault();save(false)}}><label>Namn på scenario<input aria-label="Namn på budgetscenario" value={name} maxLength={80} disabled={pending} onChange={e=>setName(e.target.value)} placeholder="T.ex. Bara prioriterade" autoFocus/></label><p>{result.selected.length} kostnader · {kr(result.cost)} / mån. Bara urvalet sparas, inte kopior av transaktioner eller fasta belopp.</p><div className="budget-scenario-actions"><button type="submit" disabled={pending||scenarios.length>=20}>Spara som nytt</button>{active&&<button type="button" disabled={pending} onClick={()=>save(true)}>Uppdatera valt scenario</button>}<button type="button" disabled={pending} onClick={()=>{setForm(false);setError('')}}>Avbryt</button></div>{scenarios.length>=20&&<p>Max 20 scenarier. Uppdatera eller ta bort ett befintligt.</p>}</form>}
+  {scenarios.length>0&&<><div className="budget-scenarios-links"><button aria-expanded={compare} aria-controls="budget-scenario-comparison" onClick={()=>setCompare(!compare)}><Columns2 size={15} aria-hidden="true"/> {compare?'Dölj jämförelse':'Jämför scenarier'} ({scenarios.length})</button>{canSave&&active&&<button disabled={pending} onClick={()=>{setConfirmDelete(true);setForm(false);setError('')}}><Trash2 size={14} aria-hidden="true"/> Ta bort valt scenario</button>}</div>{compare&&<div id="budget-scenario-comparison" className="budget-scenario-comparison"><p>Alla scenarier använder dagens planerade inkomst {kr(result.income)} och aktuella kostnadsbelopp. Skillnaden jämförs med ditt aktuella urval.</p><div className="budget-scenario-cards">{scenarios.map(s=>{const row=scenarioCostTotals(data,s),delta=sum([row.remaining,-result.remaining]);return <button key={s.id} disabled={pending} aria-label={`Visa budgetscenario: ${s.name}`} aria-pressed={active?.id===s.id&&!dirty} onClick={()=>select(s.id)}><strong>{s.name}</strong><span>Kostnader <b>{kr(row.cost,2)}</b></span><span>Kvar <b className={row.remaining<0?'negative':''}>{kr(row.remaining,2)}</b></span><small>{delta>0?'+':''}{kr(delta)} kvar mot aktuellt urval · {row.selected.length} poster</small>{!!(row.newIds.length||row.missingIds.length)&&<small>Ändrat underlag · granska urvalet</small>}</button>})}</div></div>}</>}
+  {canSave&&confirmDelete&&active&&<div className="budget-scenario-delete"><p>Ta bort ”{active.name}”? Grundbudgeten och transaktionerna påverkas inte.</p><div className="budget-scenario-actions"><button disabled={pending} onClick={remove}>Bekräfta borttagning</button><button disabled={pending} onClick={()=>setConfirmDelete(false)}>Avbryt</button></div></div>}
+  {notice&&<p className="budget-scenarios-status" role="status">{notice}</p>}{error&&<p className="budget-scenarios-warning" role="alert">{error}</p>}
+ </section>;
+}

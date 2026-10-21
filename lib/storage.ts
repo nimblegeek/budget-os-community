@@ -11,7 +11,7 @@ const amount = (v: unknown) => Number(v) / 100;
 const guard = "EXISTS(SELECT 1 FROM budget_state WHERE id='household' AND write_token=?)";
 
 export function assertUnique(data: Budget) {
-  for (const items of [data.expenses, data.incomes, data.transactions, data.debts, data.goals, data.revenueSources||[]]) {
+  for (const items of [data.expenses, data.incomes, data.transactions, data.debts, data.goals, data.revenueSources||[],data.budgetScenarios||[]]) {
     if (new Set(items.map(x => x.id)).size !== items.length) throw Error('Dubbla post-ID i budgeten.');
   }
   const money=[...(data.revenueSources||[]).map(x=>x.monthlyTarget),...data.expenses.flatMap(x=>[x.amount,x.frame]),...data.incomes.map(x=>x.amount),...data.transactions.map(x=>x.amount),...data.debts.flatMap(x=>[x.balance,x.original,x.monthly]),...data.goals.flatMap(x=>[x.target,x.saved,x.monthly])];

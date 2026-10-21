@@ -19,9 +19,9 @@ export function costCategory(name:string):CostCategory{
 export function budgetCostGroups(expenses:Expense[]){
  return costCategories.map(category=>({...category,items:expenses.filter(e=>e.status!=='Ej med'&&costCategory(e.name)===category.key)})).filter(g=>g.items.length>0);
 }
-export type CostPreset='all'|'priority'|'credit'|'none';
+export type CostPreset='all'|'priority'|'priority-credit'|'credit'|'none';
 export function presetCostIds(expenses:Expense[],preset:CostPreset){
- return expenses.filter(e=>e.status!=='Ej med'&&(preset==='all'||preset==='priority'&&isPriorityExpense(e)||preset==='credit'&&costCategory(e.name)==='credit')).map(e=>e.id);
+ return expenses.filter(e=>e.status!=='Ej med'&&(preset==='all'||preset==='priority'&&isPriorityExpense(e)||preset==='priority-credit'&&(isPriorityExpense(e)||costCategory(e.name)==='credit')||preset==='credit'&&costCategory(e.name)==='credit')).map(e=>e.id);
 }
 export function selectedCostTotals(data:Budget,excluded:string[]){
  const eligible=data.expenses.filter(e=>e.status!=='Ej med'),selected=eligible.filter(e=>!excluded.includes(e.id));

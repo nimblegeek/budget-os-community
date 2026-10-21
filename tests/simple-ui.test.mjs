@@ -21,7 +21,7 @@ const noop=()=>{};
 test('Budget cost picker exposes local grouped checkboxes, selection presets and explicit plan-only results',()=>{
  const data={...emptyBudget,incomes:[{id:'i',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''},{id:'c',name:'Krediter & blancolån',amount:2000,frame:2000,status:'Ram',note:''}]};
  const before=structuredClone(data),html=renderToStaticMarkup(createElement(BudgetCostPicker,{data}));
- for(const text of ['Vad ska få plats?','Prioriterade','Krediter','Ta med kategorin Mat &amp; livsmedel','Ta med kategorin Krediter &amp; lån','Valda kostnader / mån','Kvar enligt urval','15 000,00 kr','Jämförelseläge · inget sparas','Återställ kostnadsurval'])assert.ok(html.includes(text),text);
+ for(const text of ['Vad ska få plats?','Prioriterade','Krediter','Ta med kategorin Mat &amp; livsmedel','Ta med kategorin Krediter &amp; lån','Valda kostnader / mån','Kvar enligt urval','15 000,00 kr','Scenarier · grundbudgeten ändras inte','Återställ kostnadsurval'])assert.ok(html.includes(text),text);
  assert.ok(html.includes('type="checkbox"'));assert.ok(!html.includes('Spara urval'));assert.deepEqual(data,before);
 });
 test('Budget cost picker is safe in empty/read-only budgets and explains credit and actual-transaction boundaries',()=>{

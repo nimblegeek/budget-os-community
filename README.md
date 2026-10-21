@@ -21,6 +21,10 @@ Community source: [nimblegeek/budget-os-community](https://github.com/nimblegeek
 - Budget cost picker: select individual planned expenses or entire suggested
   categories, compare priority costs and consumer-credit payments, and see the
   planned remainder change. Actual transactions and saved budgets stay unchanged.
+- Save up to 20 named cost-selection scenarios in your private workspace, switch
+  between them and compare using current monthly amounts. Owners can rename,
+  update and delete; invited viewers can only select/compare. New cost IDs are
+  excluded until explicitly selected. Scenarios are included in verified backups.
 - **Investera:** a clearly marked future area, not a portfolio manager.
 - Desktop Cmd/Ctrl+K search, collapsible sidebar, arbitrary date ranges and dark mode.
 - Public landing page with creator credit to [JAS](https://jonasasihlen.com).
