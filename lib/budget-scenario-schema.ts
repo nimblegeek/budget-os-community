@@ -4,6 +4,8 @@ export const scenarioNameKey=(name:string)=>name.normalize('NFC').trim().toLocal
 export const budgetScenarioSchema=z.object({
  id:z.string().trim().min(1).max(180),name:z.string().trim().min(1,'Ge scenariot ett namn.').max(80,'Använd högst 80 tecken.'),
  selectedExpenseIds:ids,knownExpenseIds:ids,createdAt:z.string().datetime(),updatedAt:z.string().datetime(),
+ incomeAmount:z.number().finite().min(0).max(100_000_000).optional(),
+ expenseAmounts:z.array(z.object({id:z.string().min(1).max(180),amount:z.number().finite().min(0).max(100_000_000)})).max(100).refine(items=>new Set(items.map(i=>i.id)).size===items.length,'Dubbla kostnadsbelopp.').optional(),
 }).superRefine((scenario,ctx)=>{
  if(scenario.selectedExpenseIds.some(id=>!scenario.knownExpenseIds.includes(id)))ctx.addIssue({code:z.ZodIssueCode.custom,path:['selectedExpenseIds'],message:'Urvalet måste tillhöra scenariots kända kostnader.'});
 });

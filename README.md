@@ -22,7 +22,9 @@ Community source: [nimblegeek/budget-os-community](https://github.com/nimblegeek
   categories, compare priority costs and consumer-credit payments, and see the
   planned remainder change. Actual transactions and saved budgets stay unchanged.
 - Save up to 20 named cost-selection scenarios in your private workspace, switch
-  between them and compare using current monthly amounts. Owners can rename,
+  between them and compare income, costs and remaining money. Each scenario can
+  override total monthly income and individual expense amounts; blank fields follow
+  the base budget and zero is an explicit amount. Owners can rename,
   update and delete; invited viewers can only select/compare. New cost IDs are
   excluded until explicitly selected. Scenarios are included in verified backups.
 - **Investera:** a clearly marked future area, not a portfolio manager.

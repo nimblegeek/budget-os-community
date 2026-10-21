@@ -5,11 +5,27 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {budgetSchema,emptyBudget} from '../lib/budget.ts';
 import {makeBackup,parseBackup} from '../lib/backup.ts';
 import {budgetScenarioSchema,budgetScenariosSchema} from '../lib/budget-scenario-schema.ts';
-import {makeBudgetScenario,putBudgetScenario,removeBudgetScenario,scenarioCostTotals,scenarioSelectionMatches} from '../lib/budget-scenarios.ts';
+import {makeBudgetScenario,putBudgetScenario,removeBudgetScenario,scenarioCostTotals,scenarioSelectionMatches,scenarioPreview} from '../lib/budget-scenarios.ts';
 import {presetCostIds} from '../lib/cost-selection.ts';
 import BudgetScenarios from '../app/budget-scenarios.tsx';
 const cost=(id,name,amount,priority)=>({id,name,amount,frame:amount,status:'Ram',note:'',...(priority===undefined?{}:{priority})});
 const data=()=>({...structuredClone(emptyBudget),incomes:[{id:'income',name:'Lön',amount:20000}],expenses:[cost('home','Hyra',8000),cost('food','Mat',3000),cost('credit','Krediter & blancolån',1500),cost('other','Övrigt',200)]});
+test('Scenario amounts are independent, persist in backups, and compare against the unchanged base plan',async()=>{
+ const base=data(),copy=structuredClone(base),values={incomeAmount:15000,expenseAmounts:[{id:'home',amount:7000},{id:'credit',amount:0}]};
+ const scenario=makeBudgetScenario(base,'Deltid',['other'],undefined,values),saved=putBudgetScenario(base,scenario);
+ const result=scenarioCostTotals(saved,scenario);assert.equal(result.income,15000);assert.equal(result.cost,10000);assert.equal(result.remaining,5000);assert.equal(result.fullRemaining,7300);assert.equal(result.difference,-2300);
+ assert.deepEqual(base,copy);assert.deepEqual(saved.incomes,copy.incomes);assert.deepEqual(saved.expenses,copy.expenses);
+ assert.deepEqual(await parseBackup(JSON.stringify(await makeBackup(saved))),saved);
+ const changed={...saved,incomes:[{id:'new',name:'Lön',amount:25000}],expenses:saved.expenses.map(e=>({...e,amount:e.amount+100}))};
+ assert.equal(scenarioCostTotals(changed,scenario).remaining,4900);
+ assert.equal(scenarioPreview(base,[],{incomeAmount:0}).remaining,-12700);
+ const cleared=makeBudgetScenario(saved,'Deltid',[],scenario,{});assert.equal(scenarioCostTotals(saved,cleared).remaining,7300);
+ assert.equal(makeBudgetScenario(saved,'Deltid ny',[],scenario).incomeAmount,15000);
+});
+test('Scenario amounts reject invalid money and duplicate overrides',()=>{
+ const base=makeBudgetScenario(data(),'Bas',[]);
+ for(const values of [{incomeAmount:-1},{incomeAmount:Infinity},{incomeAmount:100000001},{expenseAmounts:[{id:'home',amount:-1}]},{expenseAmounts:[{id:'home',amount:1},{id:'home',amount:2}]}])assert.equal(budgetScenarioSchema.safeParse({...base,...values}).success,false);
+});
 test('Named scenario saves explicit selected IDs and recomputes current amounts without changing the base budget',()=>{
  const base=data(),copy=structuredClone(base),priority=makeBudgetScenario(base,'Bara prioriterade',['credit','other']);
  const next=putBudgetScenario(base,priority),withCredit=makeBudgetScenario(next,'Med krediter',['other']);

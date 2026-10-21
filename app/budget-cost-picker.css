@@ -5,6 +5,12 @@
 .cost-picker-reset{display:grid;place-items:center;min-width:44px;min-height:44px;color:var(--muted)}
 .cost-picker-help{font-size:11px!important;color:var(--muted);line-height:1.8;margin:4px 0 18px}
 .budget-scenarios{padding:0 0 18px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.scenario-amounts{margin-top:14px;border:1px solid var(--line);border-radius:6px;padding:12px}
+.scenario-amounts summary{cursor:pointer;font-size:12px;min-height:32px}
+.scenario-amounts p,.scenario-amounts small{font-size:10px;color:var(--muted);line-height:1.7}
+.scenario-amounts label{display:grid;gap:6px;margin:12px 0;font-size:12px;overflow-wrap:anywhere}
+.scenario-amounts input{width:100%;min-width:0;min-height:44px;font:inherit;font-size:16px;color:var(--ink);background:var(--canvas);border:1px solid var(--line);border-radius:5px;padding:10px;box-sizing:border-box}
+.scenario-amounts button{min-height:44px;font-size:11px;color:var(--green)}
 .budget-scenarios-toolbar{display:flex;align-items:flex-end;gap:10px}
 .budget-scenarios-toolbar>label{display:grid;gap:7px;font-size:10px;color:var(--muted);flex:1;min-width:0}
 .budget-scenarios select,.budget-scenario-form input{min-height:44px;width:100%;min-width:0;max-width:100%;font:inherit;font-size:12px;border:1px solid var(--line);border-radius:5px;padding:10px;background:var(--canvas);color:var(--ink)}
