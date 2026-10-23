@@ -1,10 +1,12 @@
 'use client';
 import { Plus, Pencil, ShieldCheck } from 'lucide-react';
-import { type Budget, kr, totals } from '../lib/budget';
+import { type Budget, kr } from '../lib/budget';
 import ExpenseList from './expense-list';
+import {monthlyPlanTotals} from '../lib/debt-summary';
+import {plannedExpenseCategory} from '../lib/cost-selection';
 
-export default function SimpleBudget({data,editable,onIncome,onExpense}:{data:Budget;editable:boolean;onIncome:(item?:Budget['incomes'][number])=>void;onExpense:(item?:Budget['expenses'][number])=>void}) {
- const t=totals(data);
+export default function SimpleBudget({data,editable,onIncome,onExpense,onDebt}:{data:Budget;editable:boolean;onIncome:(item?:Budget['incomes'][number])=>void;onExpense:(item?:Budget['expenses'][number])=>void;onDebt?:()=>void}) {
+ const t=monthlyPlanTotals(data);
  return <div className="simple-budget" id="budget-details">
   <section className="budget-result" aria-label="Månadsbudgetens resultat">
    <div><span>Kvar enligt budget</span><strong className={t.remaining<0?'negative':''}>{kr(t.remaining)}</strong></div>
@@ -19,8 +21,8 @@ export default function SimpleBudget({data,editable,onIncome,onExpense}:{data:Bu
   <section className="panel budget-step" aria-labelledby="expense-heading">
    <header className="step-heading"><span className="step-number" aria-hidden="true">2</span><div><h2 id="expense-heading">Utgifter</h2><p>Vad du planerar att betala per månad</p></div><strong>{kr(t.expenses)}</strong></header>
    {editable&&<div className="step-action"><button className="btn light full" onClick={()=>onExpense()}><Plus size={18}/> Lägg till planerad utgift</button></div>}
-   {data.expenses.length?<ExpenseList expenses={data.expenses} editable={editable} onEdit={onExpense}/>:<p className="budget-empty">Börja med boende, mat, el och försäkring.</p>}
+   {t.plan.expenses.length?<ExpenseList expenses={t.plan.expenses} editable={editable} onEdit={item=>plannedExpenseCategory(item)==='credit'&&onDebt?onDebt():onExpense(data.expenses.find(row=>row.id===item.id)||item)}/>:<p className="budget-empty">Börja med boende, mat, el och försäkring.</p>}
   </section>
-  <p className="budget-help"><ShieldCheck size={16}/> Ändringar här uppdaterar månadsplanen och prognosen för vad du har kvar.</p>
+  <p className="budget-help"><ShieldCheck size={16}/> Krediter & lån hämtas automatiskt från månadsbetalningen i Skuldöversikten. Övriga ändringar här uppdaterar månadsplanen och prognosen.</p>
  </div>;
 }

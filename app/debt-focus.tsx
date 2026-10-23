@@ -3,11 +3,12 @@ import {useState} from 'react';
 import {Plus,Trash2,Info,ChevronDown,MessageSquare} from 'lucide-react';
 import {type Budget,kr,sum} from '../lib/budget';
 import {debtAttackOrder} from '../lib/debt-order';
+import {debtSummary} from '../lib/debt-summary';
 type Loan=Budget['debts'][number];
 type Props={strategy?:string;setStrategy?:(value:string)=>void;debts:Loan[];editable:boolean;busy:boolean;onAdd:()=>void;onEdit:(loan:Loan)=>void;onDelete:(loan:Loan)=>void;onCreditors:()=>void;showPlanning?:boolean;simulation?:React.ReactNode;children?:React.ReactNode};
 export default function DebtFocus({debts,editable,busy,onAdd,onEdit,onDelete,onCreditors,showPlanning,simulation,children,strategy:controlledStrategy,setStrategy:changeStrategy}:Props){
  const [localStrategy,setLocalStrategy]=useState('avalanche'),strategy=controlledStrategy??localStrategy,setStrategy=changeStrategy??setLocalStrategy;
- const active=debts.filter(x=>x.balance>0),closed=debts.filter(x=>x.balance===0);
+ const summary=debtSummary(debts),active=summary.active,closed=debts.filter(x=>x.balance===0);
  const ordered=debtAttackOrder(debts,strategy),mortgages=active.filter(d=>d.type==='Bolån'),missing=ordered.some(d=>d.rate===null);
  const unverified=active.filter(x=>!x.balanceVerified).length;
  const row=(loan:Loan,index?:number)=><div className="loan-row" key={loan.id}>
@@ -20,8 +21,8 @@ export default function DebtFocus({debts,editable,busy,onAdd,onEdit,onDelete,onC
  </div>;
  return <div className="debt-focus">
   <section className="debt-summary" aria-label="Skuldöversikt">
-   <div className="debt-total"><span>Totalskuld</span><output aria-live="polite" aria-atomic="true">{kr(sum(active.map(x=>x.balance)),2)}</output></div>
-   <div className="debt-monthly"><span>Månadsbetalning</span><output aria-live="polite" aria-atomic="true">{kr(sum(active.map(x=>x.monthly)),2)}</output></div>
+   <div className="debt-total"><span>Totalskuld</span><output aria-live="polite" aria-atomic="true">{kr(summary.balance,2)}</output></div>
+   <div className="debt-monthly"><span>Månadsbetalning</span><output aria-live="polite" aria-atomic="true">{kr(summary.monthly,2)}</output></div>
    <details className="focus-explainer"><summary><Info size={13} aria-hidden="true"/> Alla aktiva lån · inkl. bolån</summary><p>Angivna saldon och ordinarie månadsbetalningar för lån med skuld kvar. Inte automatiskt hämtat från banken. Betalningar registreras separat i Budget.</p></details>
    {unverified>0&&<p className="debt-caution">{unverified===1?'Ett lån har äldre saldo.':`${unverified} lån har äldre saldon.`}</p>}
   </section>

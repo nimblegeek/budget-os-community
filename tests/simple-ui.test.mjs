@@ -19,9 +19,10 @@ import {createCommands,searchCommands} from '../lib/commands.ts';
 import {areas,mobilePrimary,mobileMore,featureGroups,groupOrder,groupForPage,pageTrail,sidebarPages} from '../lib/navigation.ts';
 import {isSidebarShortcut} from '../lib/sidebar.ts';
 import {emptyBudget,kr} from '../lib/budget.ts';
+import {debtSummary,monthlyPlanTotals,withDebtPayments} from '../lib/debt-summary.ts';
 const noop=()=>{};
 test('Budget cost picker exposes local grouped checkboxes, selection presets and explicit plan-only results',()=>{
- const data={...emptyBudget,incomes:[{id:'i',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''},{id:'c',name:'Krediter & blancolån',amount:2000,frame:2000,status:'Ram',note:''}]};
+ const data={...emptyBudget,incomes:[{id:'i',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''},{id:'c',name:'Krediter & blancolån',amount:999,frame:999,status:'Ram',note:''}],debts:[{id:'d',name:'Lån',balance:10000,original:10000,rate:10,monthly:2000,type:'Blanco',note:'',balanceVerified:true}]};
  const before=structuredClone(data),html=renderToStaticMarkup(createElement(BudgetCostPicker,{data}));
  for(const text of ['Jämför olika lägen','Prioriterade','Krediter','Ta med kategorin Mat &amp; livsmedel','Ta med kategorin Krediter &amp; lån','Valda utgifter / mån','Kvar enligt urval','15 000,00 kr','Scenarier · månadsplanen ändras inte','Återställ utgiftsurval'])assert.ok(html.includes(text),text);
  assert.ok(html.includes('type="checkbox"'));assert.ok(!html.includes('Spara urval'));assert.deepEqual(data,before);
@@ -29,7 +30,18 @@ test('Budget cost picker exposes local grouped checkboxes, selection presets and
 test('Budget cost picker is safe in empty/read-only budgets and explains credit and actual-transaction boundaries',()=>{
  const html=renderToStaticMarkup(createElement(BudgetCostPicker,{data:emptyBudget}));
  assert.ok(html.includes('Lägg till planerade utgifter i Månadsplan'));assert.ok(!html.includes('type="checkbox"'));
- assert.ok(html.includes('lånelistans betalningar läggs inte till igen'));assert.ok(html.includes('prognosen ovan ändras först'));
+ assert.ok(html.includes('Skuldöversikten'));assert.ok(html.includes('Äldre manuella kreditrader läggs inte ovanpå'));assert.ok(html.includes('prognosen ovan ändras först'));
+});
+test('Debt overview and monthly budget use the same active-loan payment total',()=>{
+ const debts=[{id:'a',name:'Blanco',balance:10000,original:10000,rate:10,monthly:700,type:'Blanco',note:'',balanceVerified:true},{id:'b',name:'Bolån',balance:500000,original:500000,rate:4,monthly:4200,type:'Bolån',note:'',balanceVerified:true},{id:'closed',name:'Klart',balance:0,original:1000,rate:8,monthly:100,type:'Kredit',note:'',balanceVerified:true}];
+ const data={...emptyBudget,incomes:[{id:'i',name:'Lön',amount:20000}],expenses:[{id:'c',name:'Krediter & blancolån',category:'credit',amount:123,frame:123,status:'Ram',note:''},{id:'mortgage',name:'Bolån – ränta och amortering',category:'home',amount:4200,frame:4200,status:'Betalning',note:''},{id:'m',name:'Mat',category:'food',amount:3000,frame:3000,status:'Ram',note:''}],debts};
+ const summary=debtSummary(debts),plan=monthlyPlanTotals(data),effective=withDebtPayments(data),credit=effective.expenses.find(row=>row.category==='credit');
+ assert.equal(summary.monthly,4900);assert.equal(credit.amount,4900);assert.equal(plan.expenses,7900);assert.equal(plan.remaining,12100);
+ assert.equal(effective.expenses.filter(row=>row.category==='credit').length,1);assert.ok(!effective.expenses.some(row=>row.id==='mortgage'));assert.equal(data.expenses[0].amount,123);
+ const html=renderToStaticMarkup(createElement(SimpleBudget,{data,editable:true,onIncome:noop,onExpense:noop,onDebt:noop}));
+ assert.ok(html.includes(kr(4900)));assert.ok(html.includes('hämtas automatiskt från månadsbetalningen i Skuldöversikten'));
+ const forecast=monthlyForecast({...data,transactions:[{id:'tx',date:'2026-10-02',description:'Nordea Hypotek',amount:-4200,kind:'expense',category:'Boende',reviewed:true,source:'Test',excluded:false}]},{from:'2026-10-01',to:'2026-10-31'});
+ assert.equal(forecast.rows.find(row=>row.key==='credit').actual,4200);assert.equal(forecast.rows.find(row=>row.key==='home'),undefined);
 });
 test('Scenario comparison stays inside the plan and does not replace the monthly forecast',()=>{
  const range=monthRange(),data={...emptyBudget,incomes:[{id:'p',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''}],transactions:[{id:'t',date:range.from,description:'Utgift',amount:-100,kind:'expense',category:'Mat',source:'Test',reviewed:true,excluded:false}]};

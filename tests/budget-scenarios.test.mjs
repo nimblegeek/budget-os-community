@@ -9,7 +9,7 @@ import {makeBudgetScenario,putBudgetScenario,removeBudgetScenario,scenarioCostTo
 import {presetCostIds} from '../lib/cost-selection.ts';
 import BudgetScenarios from '../app/budget-scenarios.tsx';
 const cost=(id,name,amount,priority)=>({id,name,amount,frame:amount,status:'Ram',note:'',...(priority===undefined?{}:{priority})});
-const data=()=>({...structuredClone(emptyBudget),incomes:[{id:'income',name:'Lön',amount:20000}],expenses:[cost('home','Hyra',8000),cost('food','Mat',3000),cost('credit','Krediter & blancolån',1500),cost('other','Övrigt',200)]});
+const data=()=>({...structuredClone(emptyBudget),incomes:[{id:'income',name:'Lön',amount:20000}],expenses:[cost('home','Hyra',8000),cost('food','Mat',3000),cost('credit','Krediter & blancolån',999),cost('other','Övrigt',200)],debts:[{id:'loan',name:'Testlån',balance:10000,original:10000,rate:10,monthly:1500,type:'Blanco',note:'',balanceVerified:true}]});
 test('Scenario amounts are independent, persist in backups, and compare against the unchanged base plan',async()=>{
  const base=data(),copy=structuredClone(base),values={incomeAmount:15000,expenseAmounts:[{id:'home',amount:7000},{id:'credit',amount:0}]};
  const scenario=makeBudgetScenario(base,'Deltid',['other'],undefined,values),saved=putBudgetScenario(base,scenario);
