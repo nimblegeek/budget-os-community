@@ -11,7 +11,7 @@
     "dev:local": "next dev tests/local-preview --webpack --hostname 127.0.0.1 --port 3010",
     "build": "next build --webpack",
     "start": "next start",
-    "test": "node --import ./tests/register-ts.mjs --test tests/finance.test.mjs tests/date-range.test.mjs tests/priorities.test.mjs tests/simulation.test.mjs tests/theme.test.mjs tests/postgres.test.mjs tests/access.test.mjs tests/simple-ui.test.mjs tests/revenue.test.mjs tests/workspaces.test.mjs tests/budget-scenarios.test.mjs",
+    "test": "node --import ./tests/register-ts.mjs --test tests/finance.test.mjs tests/date-range.test.mjs tests/priorities.test.mjs tests/simulation.test.mjs tests/theme.test.mjs tests/inactivity.test.mjs tests/postgres.test.mjs tests/access.test.mjs tests/simple-ui.test.mjs tests/revenue.test.mjs tests/workspaces.test.mjs tests/budget-scenarios.test.mjs",
     "db:migrate": "node --env-file-if-exists=.env.local --env-file-if-exists=.env.production.local scripts/migrate-postgres.mjs"
   },
   "dependencies": {
