@@ -24,13 +24,13 @@ const noop=()=>{};
 test('Budget cost picker exposes local grouped checkboxes, selection presets and explicit plan-only results',()=>{
  const data={...emptyBudget,incomes:[{id:'i',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''},{id:'c',name:'Krediter & blancolån',amount:999,frame:999,status:'Ram',note:''}],debts:[{id:'d',name:'Lån',balance:10000,original:10000,rate:10,monthly:2000,type:'Blanco',note:'',balanceVerified:true}]};
  const before=structuredClone(data),html=renderToStaticMarkup(createElement(BudgetCostPicker,{data}));
- for(const text of ['Jämför olika lägen','Prioriterade','Krediter','Ta med kategorin Mat &amp; livsmedel','Ta med kategorin Krediter &amp; lån','Valda utgifter / mån','Kvar enligt urval','15 000,00 kr','Scenarier · månadsplanen ändras inte','Återställ utgiftsurval'])assert.ok(html.includes(text),text);
+ for(const text of ['Jämför olika lägen','Prioriterade','Krediter','Ta med kategorin Mat &amp; livsmedel','Ta med kategorin Krediter &amp; lån','Valda utgifter / mån','Kvar enligt urval','15 000,00 kr','Scenarier · budgetbeloppen ändras inte','Återställ utgiftsurval'])assert.ok(html.includes(text),text);
  assert.ok(html.includes('type="checkbox"'));assert.ok(!html.includes('Spara urval'));assert.deepEqual(data,before);
 });
 test('Budget cost picker is safe in empty/read-only budgets and explains credit and actual-transaction boundaries',()=>{
  const html=renderToStaticMarkup(createElement(BudgetCostPicker,{data:emptyBudget}));
- assert.ok(html.includes('Lägg till planerade utgifter i Månadsplan'));assert.ok(!html.includes('type="checkbox"'));
- assert.ok(html.includes('Skuldöversikten'));assert.ok(html.includes('Äldre manuella kreditrader läggs inte ovanpå'));assert.ok(html.includes('prognosen ovan ändras först'));
+ assert.ok(html.includes('Lägg till planerade utgifter under Budgetbelopp'));assert.ok(!html.includes('type="checkbox"'));
+ assert.ok(html.includes('Skuldöversikten'));assert.ok(html.includes('Äldre manuella kreditrader läggs inte ovanpå'));assert.ok(html.includes('prognosen ändras först'));
 });
 test('Debt overview and monthly budget use the same active-loan payment total',()=>{
  const debts=[{id:'a',name:'Blanco',balance:10000,original:10000,rate:10,monthly:700,type:'Blanco',note:'',balanceVerified:true},{id:'b',name:'Bolån',balance:500000,original:500000,rate:4,monthly:4200,type:'Bolån',note:'',balanceVerified:true},{id:'closed',name:'Klart',balance:0,original:1000,rate:8,monthly:100,type:'Kredit',note:'',balanceVerified:true}];
@@ -43,11 +43,12 @@ test('Debt overview and monthly budget use the same active-loan payment total',(
  const forecast=monthlyForecast({...data,transactions:[{id:'tx',date:'2026-10-02',description:'Nordea Hypotek',amount:-4200,kind:'expense',category:'Boende',reviewed:true,source:'Test',excluded:false}]},{from:'2026-10-01',to:'2026-10-31'});
  assert.equal(forecast.rows.find(row=>row.key==='credit').actual,4200);assert.equal(forecast.rows.find(row=>row.key==='home'),undefined);
 });
-test('Scenario comparison stays inside the plan and does not replace the monthly forecast',()=>{
+test('Budget surface keeps one budget-versus-actual overview and transaction drilldowns',()=>{
  const range=monthRange(),data={...emptyBudget,incomes:[{id:'p',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''}],transactions:[{id:'t',date:range.from,description:'Utgift',amount:-100,kind:'expense',category:'Mat',source:'Test',reviewed:true,excluded:false}]};
- const html=renderToStaticMarkup(createElement(BudgetFocus,{data,range,onRange:noop,editable:false,busy:false,onAdd:noop,onEdit:noop,onDelete:noop,onIncome:noop,onExpense:noop,onHistory:noop}));
- assert.ok(html.includes('Välj och jämför planerade utgifter'));assert.ok(html.includes('17 000,00 kr'));
- assert.ok(html.includes('100 kr registrerat'));assert.ok(!html.includes('Lägg till transaktion</button>'));
+ const html=renderToStaticMarkup(createElement(BudgetFocus,{data,range,onRange:noop,onHistory:noop}));
+ assert.ok(html.includes('Budget vs utfall'));assert.ok(html.includes('17 000,00 kr'));
+ assert.ok(html.includes('Utgift'));assert.ok(html.includes('Öppna och kategorisera'));
+ assert.ok(!html.includes('Månadsplan'));assert.ok(!html.includes('Välj och jämför planerade utgifter'));
 });
 test('Public landing is a separate presentation, links to JAS and explains private access and demo figures honestly',()=>{
  const html=renderToStaticMarkup(createElement(Landing));
@@ -93,7 +94,7 @@ test('Every existing function has one main group and breadcrumbs back to that gr
 });
 test('Planning separates the monthly view from history/import and keeps advisor tools optional',()=>{
  const planning=renderToStaticMarkup(createElement(GroupHub,{group:'planera',onNavigate:noop}));
- for(const text of ['Budget','Historik &amp; import','Intäkter','Data &amp; historik','Säkerhetskopior','prognos'])assert.ok(planning.includes(text),text);
+ for(const text of ['Budget','Budgetbelopp','Historik &amp; import','Intäkter','Data &amp; historik','Kategorisera'])assert.ok(planning.includes(text),text);
  assert.ok(!planning.includes('Rådgivarsamarbete'));
  const debt=renderToStaticMarkup(createElement(GroupHub,{group:'stöd',onNavigate:noop}));
  assert.ok(debt.includes('<details class="hub-support">'));assert.ok(!debt.includes('<details open'));
@@ -154,34 +155,28 @@ function focusHtml(transactions=[],overrides={}) {
  return renderToStaticMarkup(createElement(BudgetFocus,{...focusProps,data:{...data,transactions},...overrides}));
 }
 const tx=(id,amount,kind,date='2026-10-20')=>({id,amount,kind,date,description:id,category:'Test',excluded:false,reviewed:true,source:'Test'});
-test('Budget landing has one forecast balance and one monthly flow',()=>{
+test('Budget landing contains only the traceable budget-versus-actual flow',()=>{
  const html=focusHtml();
- assert.equal((html.match(/<output/g)||[]).length,1);
- assert.ok(html.includes(`>${kr(16500,2)}</output>`));
- assert.equal((html.match(/<details class="focus-step budget-plan"/g)||[]).length,1);
- assert.ok(!html.includes('<details open'));
- assert.ok(html.includes('Månadsplan'));assert.ok(html.includes('Lägg till'));assert.ok(html.includes('Budget vs utfall'));
- assert.ok(html.includes('planerade utgifter återstår'));assert.ok(html.includes('Senast registrerat'));
- assert.ok(!html.includes('Importera CSV'));assert.ok(!html.includes('Ramar'));
- assert.ok(html.includes('Visa månadens inkomster'));assert.ok(html.includes('Visa månadens utgifter'));
- assert.ok(html.includes('<details class="focus-explainer">'));assert.ok(html.includes('utgå från kontosaldot'));
+ assert.equal((html.match(/class="monthly-forecast"/g)||[]).length,1);
+ assert.ok(html.includes(kr(16500,2)));assert.ok(html.includes('Budget vs utfall'));
+ assert.ok(html.includes('Kategorisera transaktioner'));assert.ok(html.includes('Öppna inkomster i Historik &amp; import'));
+ assert.ok(!html.includes('Månadsplan'));assert.ok(!html.includes('Senast registrerat'));assert.ok(!html.includes('Lägg till inkomst'));
 });
 test('Budget forecast combines registered events with remaining plan without counting costs twice',()=>{
  const rows=[tx('Lön',28000,'income'),tx('Hyra',-8500,'expense'),{...tx('Inkasso',-1000,'expense'),excluded:true},tx('Återköp',100,'expense'),tx('Sparöverföring',-500,'transfer'),tx('Annan månad',-900,'expense','2026-09-30')];
- assert.ok(focusHtml(rows).includes(`>${kr(16100,2)}</output>`));
+ assert.ok(focusHtml(rows).includes(kr(16100,2)));
  const withExpense=[...rows,tx('Mat',-123.45,'expense')];
- assert.ok(focusHtml(withExpense).includes(`>${kr(16100,2)}</output>`));
+ assert.ok(focusHtml(withExpense).includes(kr(16100,2)));
  const over=[tx('Lön',20000,'income'),{...tx('Mat',-4000,'expense'),category:'Mat'}];
- assert.ok(focusHtml(over).includes(`>${kr(16000,2)}</output>`));
- assert.ok(focusHtml(over.filter(x=>x.id!=='Mat')).includes(`>${kr(16500,2)}</output>`));
+ assert.ok(focusHtml(over).includes(kr(16000,2)));
+ assert.ok(focusHtml(over.filter(x=>x.id!=='Mat')).includes(kr(16500,2)));
 });
-test('Negative balance is explicit and viewer cannot add, edit or import',()=>{
+test('Negative budget result is explicit and the overview exposes no write controls',()=>{
  const budget={...emptyBudget,transactions:[tx('Köp',-123,'expense')]},html=focusHtml([],{editable:false,data:budget});
- assert.ok(html.includes('class="negative"'));assert.ok(html.includes('Planerade och registrerade utgifter överstiger den förväntade inkomsten.'));
- assert.ok(html.includes('Du har läsbehörighet'));
+ assert.ok(html.includes('class="negative"'));
  assert.ok(!html.includes('Importera CSV'));
  assert.ok(!html.includes('> Inkomst</button>'));assert.ok(!html.includes('> Utgift</button>'));
- assert.match(html,/<button[^>]*disabled=""[^>]*aria-label="Ändra transaktion: Köp"/);
+ assert.ok(html.includes('Öppna och kategorisera'));
 });
 test('Monthly forecast explains category progress, refunds, extra income and unplanned spending',()=>{
  const budget={...data,transactions:[
@@ -236,7 +231,7 @@ test('Command search finds Swedish names, amounts and records across dates witho
  assert.ok(searchCommands(items,'aldre lon').some(x=>x.recordId==='Äldre Lön'));
  assert.ok(searchCommands(items,'1500').some(x=>x.recordId==='loan'));
  assert.ok(searchCommands(items,'2025-01').some(x=>x.recordId==='Äldre Lön'));
- assert.ok(searchCommands(items,'03.2').some(x=>x.kind==='page'&&x.page==='Transaktioner'));
+ assert.ok(searchCommands(items,'03.3').some(x=>x.kind==='page'&&x.page==='Transaktioner'));
  assert.ok(searchCommands(items,'importera').some(x=>x.kind==='action'&&x.action==='import'));
  assert.ok(searchCommands(items,'ovriga utgifter').some(x=>x.recordId==='Matköp'));
  assert.equal(JSON.stringify(budget),before);
@@ -251,15 +246,13 @@ test('Read-only search has navigation and records but no write/import commands; 
  const initial=searchCommands(items,'');
  assert.equal(initial.length,Object.keys(areas).length);assert.ok(initial.every(x=>x.kind==='page'));
 });
-test('Mobile list shows recent transactions with explicit delete actions and keeps viewer read-only',()=>{
+test('Budget drilldowns show every underlying income and expense without edit or delete controls',()=>{
  const rows=[tx('Lunch',-100,'expense'),tx('Lön',1000,'income'),tx('Hyra',-700,'expense'),tx('El',-50,'expense'),tx('Överföring',-50,'transfer')];
  const html=focusHtml(rows);
- assert.equal((html.match(/class="focus-mobile-row"/g)||[]).length,3);
- assert.equal((html.match(/aria-label="Ta bort transaktion:/g)||[]).length,3);
- assert.ok(html.includes('aria-expanded="false">Visa fler här</button>'));
- assert.ok(!focusHtml(rows,{editable:false}).includes('aria-label="Ta bort transaktion:'));
- const busyHtml=focusHtml(rows,{busy:true});
- assert.match(busyHtml, /class="focus-mobile-delete" disabled=""/);
+ assert.equal((html.match(/class="forecast-transaction"/g)||[]).length,4);
+ for(const label of ['Lunch','Lön','Hyra','El'])assert.ok(html.includes(label));
+ assert.ok(!html.includes('Överföring</strong>'));assert.ok(!html.includes('Ta bort transaktion:'));
+ assert.ok(html.includes('Öppna och kategorisera'));assert.ok(html.includes('Öppna inkomster i Historik &amp; import'));
 });
 test('Sidebar shortcut supports Cmd/Ctrl+B only on desktop outside editing controls',()=>{
  const event={key:'b',metaKey:true,ctrlKey:false,altKey:false,shiftKey:false,repeat:false,defaultPrevented:false};

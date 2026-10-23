@@ -22,20 +22,40 @@
 .monthly-forecast>header span{display:block;text-transform:uppercase;letter-spacing:1px;font-size:9px;color:var(--muted)}
 .monthly-forecast h2{font-size:16px;font-weight:500;letter-spacing:-.4px;margin:6px 0 0}
 .monthly-forecast>header button{display:flex;align-items:center;gap:4px;min-height:40px;font-size:10px;color:var(--muted);flex-shrink:0}
+.forecast-intro{font-size:11px;line-height:1.7;color:var(--muted);margin:-4px 0 14px;max-width:540px}
 .forecast-equation{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:8px;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .forecast-equation div{min-width:0;padding:10px;border:1px solid var(--line);border-radius:5px}
 .forecast-equation .forecast-primary{background:var(--soft);border-color:var(--green)}
 .forecast-equation div>span,.forecast-equation small{display:block;font-size:9px;color:var(--muted);line-height:1.5}
 .forecast-equation strong{display:block;font-size:14px;font-weight:500;margin:6px 0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.forecast-equation strong.negative{color:#d77968}
 .forecast-groups{margin-top:4px}
-.forecast-groups>button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;min-height:62px;text-align:left;border-bottom:1px solid var(--line);padding:10px 0}
-.forecast-groups>button:hover{background:var(--soft)}
-.forecast-groups>button>span{min-width:0}
-.forecast-groups>button>span:last-child{text-align:right;flex-shrink:0}
+.forecast-category{border-bottom:1px solid var(--line)}
+.forecast-category>summary{display:grid;grid-template-columns:minmax(0,1fr) auto 18px;align-items:center;gap:12px;min-height:66px;list-style:none;cursor:pointer;padding:10px 0}
+.forecast-category>summary::-webkit-details-marker{display:none}
+.forecast-category>summary:hover{background:var(--soft)}
+.forecast-category>summary>span{min-width:0}
+.forecast-category>summary>span:nth-child(2){text-align:right;flex-shrink:0}
+.forecast-category>summary>svg{color:var(--muted);transition:transform .15s}
+.forecast-category[open]>summary>svg{transform:rotate(180deg)}
 .forecast-groups strong{display:block;font-size:11px;font-weight:500;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 .forecast-groups small{display:block;font-size:9px;color:var(--muted);margin-top:5px;line-height:1.5}
+.forecast-drilldown{padding:2px 0 14px 14px;border-left:1px solid var(--green)}
+.forecast-drilldown>p{font-size:10px;color:var(--muted);margin:10px 0}
+.forecast-drilldown>button{display:flex;align-items:center;gap:4px;min-height:42px;color:var(--green);font-size:10px;margin-top:4px}
+.forecast-transaction{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:50px;border-bottom:1px solid var(--line);padding:8px 0}
+.forecast-transaction>span{min-width:0}
+.forecast-transaction strong{font-size:10px}
+.forecast-transaction>strong{white-space:nowrap;text-align:right}
+.forecast-transaction small{font-size:9px;margin-top:4px}
 .forecast-warning{font-size:10px;line-height:1.7;color:#d77968;margin:12px 0 0}
 .forecast-note{font-size:10px;line-height:1.7;color:var(--muted);margin:12px 0 0}
+.budget-setup{max-width:620px;margin:20px auto 0}
+.budget-setup-intro{font-size:12px;line-height:1.7;color:var(--muted);margin:0 0 20px}
+.transaction-purpose{display:flex;align-items:center;gap:14px;max-width:900px;margin:0 auto 18px;padding:14px 16px;border:1px solid var(--line);border-radius:7px;background:var(--surface)}
+.transaction-purpose>strong{font-size:12px;white-space:nowrap}.transaction-purpose>p{font-size:10px;line-height:1.55;color:var(--muted);margin:0;flex:1}
+.transaction-purpose>div{display:flex;gap:4px;padding:3px;background:var(--soft);border-radius:5px}.transaction-purpose button{min-height:34px;padding:0 10px;border-radius:3px;font-size:9px;color:var(--muted)}.transaction-purpose button[aria-pressed=true]{background:var(--green);color:var(--canvas)}
+.transactions-page>p.small{display:none}
 .budget-comparison{margin:22px 0 14px;padding:0 0 14px;border-bottom:1px solid var(--line)}
 .budget-comparison figcaption{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .budget-comparison h2{font-size:12px;font-weight:500;margin:0}
@@ -88,6 +108,8 @@
  .forecast-equation{grid-template-columns:1fr;gap:8px;text-align:left}
  .forecast-equation div{padding:5px 0}
  .forecast-equation strong{font-size:13px;margin:4px 0}
+ .forecast-category>summary{grid-template-columns:minmax(0,1fr) auto 16px;gap:8px}.forecast-drilldown{padding-left:10px}
+ .transaction-purpose{display:block;margin:0 0 12px}.transaction-purpose>p{margin:7px 0 10px}.transaction-purpose>div{width:100%}.transaction-purpose button{flex:1}
  .budget-comparison{margin-top:12px}
  .budget-comparison h2{font-size:11px}
  .budget-comparison figcaption button{font-size:10px}

@@ -5,7 +5,7 @@ import {transactionExpenseCategory} from './expense-categories';
 import {transactionMatchesActiveDebt,withDebtPayments} from './debt-summary';
 
 const cents=(n:number)=>Math.round(n*100)/100;
-const transactionCategory=(data:Budget,transaction:Budget['transactions'][number]):CostCategory=>transactionMatchesActiveDebt(data,transaction)?'credit':transactionExpenseCategory(transaction.category,transaction.description);
+export const forecastTransactionCategory=(data:Budget,transaction:Budget['transactions'][number]):CostCategory=>transactionMatchesActiveDebt(data,transaction)?'credit':transactionExpenseCategory(transaction.category,transaction.description);
 export const transactionBudgetMonth=(transaction:Budget['transactions'][number])=>transaction.budgetMonth||transaction.date.slice(0,7);
 export const budgetMonthName=(value:string)=>new Intl.DateTimeFormat('sv-SE',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(value+'-01T12:00:00Z'));
 
@@ -24,7 +24,7 @@ export function monthlyForecast(data:Budget,range:DateRange){
   const key=plannedExpenseCategory(row);plannedBy.set(key,cents((plannedBy.get(key)||0)+row.amount));
  }
  for(const row of transactions.filter(row=>row.kind==='expense')){
-  const key=transactionCategory(data,row);actualBy.set(key,cents((actualBy.get(key)||0)-row.amount));
+  const key=forecastTransactionCategory(data,row);actualBy.set(key,cents((actualBy.get(key)||0)-row.amount));
  }
  const rows=costCategories.map(category=>{
   const planned=plannedBy.get(category.key)||0,actual=actualBy.get(category.key)||0;

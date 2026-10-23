@@ -4,9 +4,10 @@ export const areas = {
  Investera:{number:'02',label:'Investera'},
  Planera:{number:'03',label:'Planera'},
  Översikt:{number:'03.1',label:'Budget'},
- Transaktioner:{number:'03.2',label:'Historik & import'},
- Intäkter:{number:'03.3',label:'Intäkter'},
- Underlag:{number:'03.4',label:'Data & historik'},
+ Budgetunderlag:{number:'03.2',label:'Budgetbelopp'},
+ Transaktioner:{number:'03.3',label:'Historik & import'},
+ Intäkter:{number:'03.4',label:'Intäkter'},
+ Underlag:{number:'03.5',label:'Data & historik'},
  Stöd:{number:'04',label:'Skulder & stöd'},
  Skulder:{number:'04.1',label:'Lån'},
  Borgenärer:{number:'04.2',label:'Borgenärer'},
@@ -16,7 +17,7 @@ export type Page=keyof typeof areas;
 export const featureGroups={
  spara:{page:'Sparande',label:'Spara',description:'Buffert, sparmål och månadssparande.',includes:'Sparmål · Månadssparande',pages:['Sparande']},
  investera:{page:'Investera',label:'Investera',description:'Långsiktig ekonomi. Portföljstöd kommer senare.',includes:'Kommande område',pages:['Investera']},
- planera:{page:'Planera',label:'Planera',description:'Månadsplan, tydlig prognos, registrerade händelser och intäkter.',includes:'Budget · Historik · Intäkter',pages:['Översikt','Transaktioner','Intäkter','Underlag']},
+ planera:{page:'Planera',label:'Planera',description:'Sätt budgetbelopp, följ utfallet och kategorisera registrerade händelser.',includes:'Budget · Budgetbelopp · Historik',pages:['Översikt','Budgetunderlag','Transaktioner','Intäkter','Underlag']},
  stöd:{page:'Stöd',label:'Skulder & stöd',description:'Lån och betalningar. Valfritt: borgenärer och rådgivarsamarbete.',includes:'Lån · Valfria stödverktyg',pages:['Skulder','Borgenärer','Samarbete']},
 } as const satisfies Record<string,{page:Page;label:string;description:string;includes:string;pages:readonly Page[]}>;
 export type Group=keyof typeof featureGroups;
@@ -34,8 +35,9 @@ export function pageTrail(page:Page):Page[]{
  return ['Start',...(parent&&parent!==page?[parent]:[])];
 }
 export const pageDescriptions:Partial<Record<Page,string>>={
- Översikt:'Se beräknat kvar, registrerade utgifter och det som återstår i månadsplanen.',
- Transaktioner:'Sök i historiken, granska poster och importera bank-CSV.',
+ Översikt:'Jämför budget med verkligt utfall och se exakt vilka transaktioner som ligger bakom.',
+ Budgetunderlag:'Ange planerade inkomster och belopp per utgiftskategori.',
+ Transaktioner:'Kategorisera transaktioner, sök i historiken och importera bank-CSV.',
  Intäkter:'Ordna inbetalningar per källa eller plattform. Följ fördelningen och skapa en delningsbild.',
  Underlag:'Säkerhetskopior, återställning, källunderlag och ändringshistorik. För alla, även utan rådgivare.',
  Skulder:'Totalskuld, månadsbetalningar och skuldresa. Hantera lån och simulera återbetalning eller samlingslån.',
