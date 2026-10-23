@@ -1,5 +1,5 @@
 /* Monospaced budget surface; no change to financial data or calculations. */
-html[data-theme=dark]:has(.budget-home){--ink:#eef1ee;--muted:#b9c1bc;--green:#d2efbb;--line:#526057;--soft:#344038;--sage:#3c493f;--surface:#2a352f;--canvas:#202823}
+html[data-theme=dark]:has(.budget-home){--ink:#eef1ee;--muted:#b9c1bc;--green:#bcf49b;--line:#526057;--soft:#344038;--sage:#3c493f;--surface:#2a352f;--canvas:#202823}
 body:has(.budget-home),body:has(.budget-home) :is(button,input,select,textarea){font-family:var(--terminal-mono)}
 body:has(.budget-home) .sidebar nav button{font-family:var(--terminal-mono)}
 html[data-theme=dark] body:has(.budget-home) .sidebar{background:#27312b}
