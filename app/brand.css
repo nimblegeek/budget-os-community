@@ -15,7 +15,7 @@
 .screen-location{display:flex;align-items:center;gap:9px;min-width:0;border-left:1px solid var(--line);padding-left:16px;font-size:11px}
 html{scroll-padding-top:88px}
 html[data-theme=dark] .budget-brand{--brand-accent:#bcf49b}
-html[data-theme=dark] .topbar{background:#111914f2}
+html[data-theme=dark] .topbar{background:#1f261ff2}
 @media(max-width:1050px){.screen-location{display:none}}
 @media(max-width:650px){.sidebar>.budget-brand{display:none}.login>.budget-brand{margin-bottom:38px}.topbar{gap:8px;top:0}.topbar .privacy{display:none}.topbar .screen-signature{gap:0}html{scroll-padding-top:72px}}
 @media print{.topbar{position:static;backdrop-filter:none;background:transparent!important}.budget-brand{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
