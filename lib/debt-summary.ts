@@ -1,5 +1,6 @@
 import {type Budget,sum} from './budget';
 import {expenseCategoryKey} from './expense-categories';
+import {type DebtSnapshot} from './journey';
 
 const normalized=(value:string)=>value.toLocaleLowerCase('sv-SE').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
 export const isDebtPlanExpense=(expense:Budget['expenses'][number])=>(expense.category||expenseCategoryKey(expense.name))==='credit'||/(^| )(bolan|blancolan|amortering)( |$)/.test(normalized(expense.name));
@@ -7,6 +8,15 @@ export const isDebtPlanExpense=(expense:Budget['expenses'][number])=>(expense.ca
 export function debtSummary(debts:Budget['debts']){
  const active=debts.filter(debt=>debt.balance>0);
  return {active,balance:sum(active.map(debt=>debt.balance)),monthly:sum(active.map(debt=>debt.monthly))};
+}
+
+export function monthlyDebtSnapshots(history:DebtSnapshot[]){
+ const months=new Map<string,{month:string;date:string;balance:number;verified:boolean}>();
+ for(const snapshot of [...history].sort((a,b)=>a.date.localeCompare(b.date))){
+  const month=snapshot.date.slice(0,7);
+  months.set(month,{month,date:snapshot.date,balance:sum(snapshot.balances.map(row=>row.balance)),verified:snapshot.balances.every(row=>row.verified)});
+ }
+ return [...months.values()].sort((a,b)=>a.month.localeCompare(b.month));
 }
 
 export function withDebtPayments(data:Budget):Budget{

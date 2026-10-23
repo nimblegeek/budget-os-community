@@ -19,7 +19,7 @@ import {createCommands,searchCommands} from '../lib/commands.ts';
 import {areas,mobilePrimary,mobileMore,featureGroups,groupOrder,groupForPage,pageTrail,sidebarPages} from '../lib/navigation.ts';
 import {isSidebarShortcut} from '../lib/sidebar.ts';
 import {emptyBudget,kr} from '../lib/budget.ts';
-import {debtSummary,monthlyPlanTotals,withDebtPayments} from '../lib/debt-summary.ts';
+import {debtSummary,monthlyDebtSnapshots,monthlyPlanTotals,withDebtPayments} from '../lib/debt-summary.ts';
 const noop=()=>{};
 test('Budget cost picker exposes local grouped checkboxes, selection presets and explicit plan-only results',()=>{
  const data={...emptyBudget,incomes:[{id:'i',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''},{id:'c',name:'Krediter & blancolån',amount:999,frame:999,status:'Ram',note:''}],debts:[{id:'d',name:'Lån',balance:10000,original:10000,rate:10,monthly:2000,type:'Blanco',note:'',balanceVerified:true}]};
@@ -273,6 +273,18 @@ test('Sidebar shortcut supports Cmd/Ctrl+B only on desktop outside editing contr
 });
 const loan=(id,balance,monthly,type='Blanco')=>({id,name:id,balance,monthly,type,original:balance,rate:10,note:'',balanceVerified:true});
 const debtHtml=(debts,props={})=>renderToStaticMarkup(createElement(DebtFocus,{debts,editable:true,busy:false,onAdd:noop,onEdit:noop,onDelete:noop,onCreditors:noop,...props}));
+test('Debt month history keeps the latest real checkpoint per month without inventing missing months',()=>{
+ const history=[
+  {date:'2026-08-05',balances:[{id:'a',balance:1000,verified:true}]},
+  {date:'2026-08-28',balances:[{id:'a',balance:900,verified:true}]},
+  {date:'2026-10-01',balances:[{id:'a',balance:700,verified:false},{id:'b',balance:200,verified:true}]},
+ ],before=structuredClone(history);
+ assert.deepEqual(monthlyDebtSnapshots(history),[
+  {month:'2026-08',date:'2026-08-28',balance:900,verified:true},
+  {month:'2026-10',date:'2026-10-01',balance:900,verified:false},
+ ]);
+ assert.deepEqual(history,before);
+});
 test('Attack strategies order active consumer debts without mutation and disclose unknown interest',()=>{
  const debts=[{...loan('Small',500,50),rate:0},{...loan('High',5000,200),rate:25},{...loan('Unknown',200,50),rate:null},loan('Home',100000,1000,'Bolån'),loan('Closed',0,0),{...loan('Tie',1000,100),rate:25}],before=structuredClone(debts);
  assert.deepEqual(debtAttackOrder(debts,'avalanche').map(d=>d.id),['Tie','High','Small','Unknown']);
@@ -286,10 +298,12 @@ test('Attack strategies order active consumer debts without mutation and disclos
 });
 test('Debt overview totals the same active loans including mortgages, retaining closed loans separately',()=>{
  const debts=[loan('Blanco',10000.25,500.5),loan('Bolån',1000000,7000,'Bolån'),loan('Avslutat',0,100)];
- const before=JSON.stringify(debts),html=debtHtml(debts);
+ const before=JSON.stringify(debts),html=debtHtml(debts,{onCheckpoint:noop});
  assert.ok(html.includes(`>${kr(1010000.25,2)}</output>`));
  assert.ok(html.includes(`>${kr(7500.5,2)}</output>`));
  assert.equal((html.match(/<output/g)||[]).length,2);
+ assert.ok(html.includes('Bläddra mellan skuldmånader'));assert.ok(html.includes('Föregående skuldmånad'));assert.ok(html.includes('Nästa skuldmånad'));
+ assert.ok(html.includes('Månadsbetalning nu'));assert.ok(html.includes('Spara månadens saldon'));
  assert.ok(html.includes('Aktiva lån i översikten'));assert.ok(!html.includes('inkl. bolån'));assert.ok(html.includes('Avslutade lån (1)'));
  assert.ok(html.includes('<details class="debt-more">'));
  assert.equal(JSON.stringify(debts),before);
@@ -298,6 +312,7 @@ test('Debt overview empty/read-only states and stale balance warning remain clea
  const empty=debtHtml([]);assert.ok(empty.includes('Inga lån tillagda ännu.'));assert.equal(empty.split(`>${kr(0,2)}</output>`).length-1,2);
  const html=debtHtml([{...loan('Äldre lån',1000,100),balanceVerified:false}],{editable:false});
  assert.ok(html.includes('Ett lån har äldre saldo.'));assert.ok(html.includes('Du har läsbehörighet.'));
+ assert.ok(!html.includes('Spara månadens saldon'));
  assert.ok(!html.includes('Lägg till lån'));assert.ok(!html.includes('Ta bort lån:'));
  assert.match(html, /class="loan-edit" disabled=""/);
 });

@@ -3,9 +3,16 @@
 .debt-heading h1{font-size:18px;font-weight:500;letter-spacing:-.5px;margin:0}
 .debt-heading>span{font-size:10px;color:var(--muted);letter-spacing:1px}
 .debt-summary{text-align:center;padding:16px 0 20px}
+.debt-month-browser{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:2px}
+.debt-month-browser span{min-width:150px;text-align:center;text-transform:uppercase;letter-spacing:1px;font-size:11px}
+.debt-month-browser button{width:44px;height:44px;display:grid;place-items:center;border-radius:4px;color:var(--muted)}
+.debt-month-browser button:hover:not(:disabled){background:var(--soft);color:var(--ink)}
 .debt-total>span,.debt-monthly>span{display:block;text-transform:uppercase;letter-spacing:1.2px;font-size:11px;color:var(--muted)}
 .debt-total output{display:block;color:var(--green);font-size:clamp(30px,5vw,54px);letter-spacing:-2.5px;line-height:1.25;margin:14px 0 28px;overflow-wrap:anywhere}
+.debt-total>small{display:block;margin:-18px 0 22px}.debt-total>small b{font-weight:500;color:var(--green)}.debt-total>small b.negative{color:#d77968}
+.debt-missing{display:block;color:var(--muted);font-size:24px;font-weight:500;margin:18px 0 10px}.debt-history-empty{font-size:11px;margin:0 auto 22px;max-width:390px}
 .debt-monthly output{display:block;font-size:26px;letter-spacing:-1px;margin:10px 0 12px;overflow-wrap:anywhere}
+.debt-checkpoint{display:flex;align-items:center;justify-content:center;gap:7px;min-height:42px;margin:8px auto 4px;padding:0 14px;border:1px solid var(--line);border-radius:5px;color:var(--green);font-size:11px}
 .debt-caution{font-size:11px;color:var(--muted);margin:0}
 .debt-add{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;border-radius:5px;background:var(--green);color:var(--canvas);font-size:14px;margin:0 0 20px}
 .loan-list{border-top:1px solid var(--line)}
