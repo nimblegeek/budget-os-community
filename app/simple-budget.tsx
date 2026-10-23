@@ -23,6 +23,6 @@ export default function SimpleBudget({data,editable,onIncome,onExpense,onDebt}:{
    {editable&&<div className="step-action"><button className="btn light full" onClick={()=>onExpense()}><Plus size={18}/> Lägg till planerad utgift</button></div>}
    {t.plan.expenses.length?<ExpenseList expenses={t.plan.expenses} editable={editable} onEdit={item=>plannedExpenseCategory(item)==='credit'&&onDebt?onDebt():onExpense(data.expenses.find(row=>row.id===item.id)||item)}/>:<p className="budget-empty">Börja med boende, mat, el och försäkring.</p>}
   </section>
-  <p className="budget-help"><ShieldCheck size={16}/> Krediter & lån hämtas automatiskt från månadsbetalningen i Skuldöversikten. Övriga ändringar här uppdaterar budgetbeloppen som jämförs med utfallet.</p>
+  <p className="budget-help"><ShieldCheck size={16}/> Krediter & lån hämtas automatiskt från blancolån och krediter i Skuldöversikten. Bolån ligger separat som en boendekostnad. Övriga ändringar här uppdaterar budgetbeloppen som jämförs med utfallet.</p>
  </div>;
 }

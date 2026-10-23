@@ -32,16 +32,24 @@ test('Budget cost picker is safe in empty/read-only budgets and explains credit 
  assert.ok(html.includes('Lägg till planerade utgifter under Budgetbelopp'));assert.ok(!html.includes('type="checkbox"'));
  assert.ok(html.includes('Skuldöversikten'));assert.ok(html.includes('Äldre manuella kreditrader läggs inte ovanpå'));assert.ok(html.includes('prognosen ändras först'));
 });
-test('Debt overview and monthly budget use the same active-loan payment total',()=>{
+test('Mortgage stays separate while consumer-debt payments come from the debt overview',()=>{
  const debts=[{id:'a',name:'Blanco',balance:10000,original:10000,rate:10,monthly:700,type:'Blanco',note:'',balanceVerified:true},{id:'b',name:'Bolån',balance:500000,original:500000,rate:4,monthly:4200,type:'Bolån',note:'',balanceVerified:true},{id:'closed',name:'Klart',balance:0,original:1000,rate:8,monthly:100,type:'Kredit',note:'',balanceVerified:true}];
  const data={...emptyBudget,incomes:[{id:'i',name:'Lön',amount:20000}],expenses:[{id:'c',name:'Krediter & blancolån',category:'credit',amount:123,frame:123,status:'Ram',note:''},{id:'mortgage',name:'Bolån – ränta och amortering',category:'home',amount:4200,frame:4200,status:'Betalning',note:''},{id:'m',name:'Mat',category:'food',amount:3000,frame:3000,status:'Ram',note:''}],debts};
  const summary=debtSummary(debts),plan=monthlyPlanTotals(data),effective=withDebtPayments(data),credit=effective.expenses.find(row=>row.category==='credit');
- assert.equal(summary.monthly,4900);assert.equal(credit.amount,4900);assert.equal(plan.expenses,7900);assert.equal(plan.remaining,12100);
- assert.equal(effective.expenses.filter(row=>row.category==='credit').length,1);assert.ok(!effective.expenses.some(row=>row.id==='mortgage'));assert.equal(data.expenses[0].amount,123);
+ assert.equal(summary.monthly,4900);assert.equal(credit.amount,700);assert.equal(plan.expenses,7900);assert.equal(plan.remaining,12100);
+ assert.equal(effective.expenses.filter(row=>row.category==='credit').length,1);assert.ok(effective.expenses.some(row=>row.id==='mortgage'));assert.equal(data.expenses[0].amount,123);
  const html=renderToStaticMarkup(createElement(SimpleBudget,{data,editable:true,onIncome:noop,onExpense:noop,onDebt:noop}));
- assert.ok(html.includes(kr(4900)));assert.ok(html.includes('hämtas automatiskt från månadsbetalningen i Skuldöversikten'));
+ assert.ok(html.includes(kr(700)));assert.ok(html.includes('Bolån ligger separat'));
  const forecast=monthlyForecast({...data,transactions:[{id:'tx',date:'2026-10-02',description:'Nordea Hypotek',amount:-4200,kind:'expense',category:'Boende',reviewed:true,source:'Test',excluded:false}]},{from:'2026-10-01',to:'2026-10-31'});
- assert.equal(forecast.rows.find(row=>row.key==='credit').actual,4200);assert.equal(forecast.rows.find(row=>row.key==='home'),undefined);
+ assert.equal(forecast.rows.find(row=>row.key==='mortgage').actual,4200);assert.equal(forecast.rows.find(row=>row.key==='credit').actual,0);
+});
+
+test('Four separately registered mortgage payments reconcile with one mortgage budget category',()=>{
+ const transactions=[884,1398,1062,1398].map((amount,index)=>({id:String(index),date:'2026-10-27',description:`Bolån del ${index+1}`,amount:-amount,kind:'expense',category:'Bolån',reviewed:true,source:'Test',excluded:false}));
+ const forecast=monthlyForecast({...emptyBudget,expenses:[{id:'mortgage',name:'Bolån',category:'mortgage',amount:4742,frame:4742,status:'Betalning',note:''}],transactions},{from:'2026-10-01',to:'2026-10-31'});
+ assert.equal(forecast.rows.find(row=>row.key==='mortgage').planned,4742);
+ assert.equal(forecast.rows.find(row=>row.key==='mortgage').actual,4742);
+ assert.equal(forecast.rows.find(row=>row.key==='credit'),undefined);
 });
 test('Budget surface keeps one budget-versus-actual overview and transaction drilldowns',()=>{
  const range=monthRange(),data={...emptyBudget,incomes:[{id:'p',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''}],transactions:[{id:'t',date:range.from,description:'Utgift',amount:-100,kind:'expense',category:'Mat',source:'Test',reviewed:true,excluded:false}]};

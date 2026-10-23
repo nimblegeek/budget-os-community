@@ -5,7 +5,10 @@ import {transactionExpenseCategory} from './expense-categories';
 import {transactionMatchesActiveDebt,withDebtPayments} from './debt-summary';
 
 const cents=(n:number)=>Math.round(n*100)/100;
-export const forecastTransactionCategory=(data:Budget,transaction:Budget['transactions'][number]):CostCategory=>transactionMatchesActiveDebt(data,transaction)?'credit':transactionExpenseCategory(transaction.category,transaction.description);
+export const forecastTransactionCategory=(data:Budget,transaction:Budget['transactions'][number]):CostCategory=>{
+ const category=transactionExpenseCategory(transaction.category,transaction.description);
+ return category==='mortgage'?'mortgage':transactionMatchesActiveDebt(data,transaction)?'credit':category;
+};
 export const transactionBudgetMonth=(transaction:Budget['transactions'][number])=>transaction.budgetMonth||transaction.date.slice(0,7);
 export const budgetMonthName=(value:string)=>new Intl.DateTimeFormat('sv-SE',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(value+'-01T12:00:00Z'));
 

@@ -13,7 +13,7 @@ const costs=[expense('home','Bolån',5000),expense('food','Mat',3000),expense('e
 test('Cost categories are exclusive, preserve cents and never mix mortgage with consumer credit',()=>{
  const groups=budgetCostGroups(costs),all=groups.flatMap(g=>g.items.map(x=>x.id));
  assert.equal(new Set(all).size,all.length);assert.equal(all.length,6);assert.ok(!all.includes('out'));
- assert.equal(costCategory('Bolån (ränta och amortering)'),'home');assert.equal(costCategory('Krediter & blancolån'),'credit');
+ assert.equal(costCategory('Bolån (ränta och amortering)'),'mortgage');assert.equal(costCategory('Krediter & blancolån'),'credit');
  assert.equal(costCategory('Tele'),'phone');assert.equal(costCategory('Elhandel'),'utilities');assert.equal(costCategory('Hemförsäkring'),'insurance');assert.equal(costCategory('Oförutsedda avgifter'),'other');
 });
 test('Stored budget categories override names and legacy values still normalize',()=>{

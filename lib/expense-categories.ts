@@ -1,5 +1,6 @@
 export const expenseCategories=[
  {key:'home',label:'Boende'},
+ {key:'mortgage',label:'Bolån'},
  {key:'food',label:'Mat & livsmedel'},
  {key:'utilities',label:'El, värme & vatten'},
  {key:'insurance',label:'Försäkringar'},
@@ -17,7 +18,8 @@ const exact=new Map<string,ExpenseCategoryKey>(expenseCategories.flatMap(categor
 export function isExpenseCategory(value:string):boolean{return exact.has(normalize(value))}
 export function expenseCategoryKey(value:string):ExpenseCategoryKey{
  const n=normalize(value),known=exact.get(n);if(known)return known;
- if(/^(boende|hyra|bolan|bostad|brf)( |$)|^(avgift|bostadsrattsavgift|manadsavgift)$/.test(n))return 'home';
+ if(/(^| )(bolan|hypotek)( |$)/.test(n))return 'mortgage';
+ if(/^(boende|hyra|bostad|brf)( |$)|^(avgift|bostadsrattsavgift|manadsavgift)$/.test(n))return 'home';
  if(/^(mat|livsmedel|matvaror)( |$)/.test(n))return 'food';
  if(/^(el|elnat|elhandel|varme|vatten|va avfall)( |$)/.test(n))return 'utilities';
  if(/^(forsakring|forsakringar|hemforsakring|personforsakring|bilforsakring)( |$)/.test(n))return 'insurance';
@@ -28,5 +30,6 @@ export function expenseCategoryKey(value:string):ExpenseCategoryKey{
 }
 export function expenseCategoryLabel(value:string){const key=expenseCategoryKey(value);return expenseCategories.find(category=>category.key===key)!.label}
 export function transactionExpenseCategory(category:string,description=''){
+ if(expenseCategoryKey(description)==='mortgage')return 'mortgage';
  return isExpenseCategory(category)?expenseCategoryKey(category):expenseCategoryKey(category)==='other'?expenseCategoryKey(description):expenseCategoryKey(category);
 }

@@ -8,7 +8,7 @@ export function defaultPriority(name:string){
     || /^(brf avgift|bostadsrattsavgift|manadsavgift|avgift)$/.test(n)
     || /^(el|elnat|elhandel|hemforsakring|forsakring|forsakringar|vatten|va avfall|vatten avfall)( |$)/.test(n);
 }
-export function isPriorityExpense(expense:Expense){return expense.status!=='Ej med'&&(expense.priority??(expense.category?['home','food','utilities','insurance'].includes(expense.category):defaultPriority(expense.name)));}
+export function isPriorityExpense(expense:Expense){return expense.status!=='Ej med'&&(expense.priority??(expense.category?['home','mortgage','food','utilities','insurance'].includes(expense.category):defaultPriority(expense.name)));}
 export function expenseGroups<T extends Expense>(expenses:T[]){
   return [
     {key:'priority',title:'Prioriterade basutgifter',items:expenses.filter(isPriorityExpense)},
