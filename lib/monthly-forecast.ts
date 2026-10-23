@@ -1,12 +1,10 @@
 import {type Budget,sum} from './budget';
 import {type DateRange,inDateRange} from './date-range';
-import {costCategories,costCategory,type CostCategory} from './cost-selection';
+import {costCategories,plannedExpenseCategory,type CostCategory} from './cost-selection';
+import {transactionExpenseCategory} from './expense-categories';
 
 const cents=(n:number)=>Math.round(n*100)/100;
-const transactionCategory=(transaction:Budget['transactions'][number]):CostCategory=>{
- const category=costCategory(transaction.category);
- return category==='other'?costCategory(transaction.description):category;
-};
+const transactionCategory=(transaction:Budget['transactions'][number]):CostCategory=>transactionExpenseCategory(transaction.category,transaction.description);
 
 export function monthlyForecast(data:Budget,range:DateRange){
  const transactions=data.transactions.filter(row=>inDateRange(row.date,range)&&!row.excluded);
@@ -14,7 +12,7 @@ export function monthlyForecast(data:Budget,range:DateRange){
  const actualIncome=cents(transactions.filter(row=>row.kind==='income').reduce((total,row)=>total+row.amount,0));
  const plannedBy=new Map<CostCategory,number>(),actualBy=new Map<CostCategory,number>();
  for(const row of data.expenses.filter(row=>row.status!=='Ej med')){
-  const key=costCategory(row.name);plannedBy.set(key,cents((plannedBy.get(key)||0)+row.amount));
+  const key=plannedExpenseCategory(row);plannedBy.set(key,cents((plannedBy.get(key)||0)+row.amount));
  }
  for(const row of transactions.filter(row=>row.kind==='expense')){
   const key=transactionCategory(row);actualBy.set(key,cents((actualBy.get(key)||0)-row.amount));

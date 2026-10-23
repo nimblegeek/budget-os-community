@@ -215,6 +215,7 @@ test('Command search finds Swedish names, amounts and records across dates witho
  assert.ok(searchCommands(items,'2025-01').some(x=>x.recordId==='Äldre Lön'));
  assert.ok(searchCommands(items,'03.2').some(x=>x.kind==='page'&&x.page==='Transaktioner'));
  assert.ok(searchCommands(items,'importera').some(x=>x.kind==='action'&&x.action==='import'));
+ assert.ok(searchCommands(items,'ovriga utgifter').some(x=>x.recordId==='Matköp'));
  assert.equal(JSON.stringify(budget),before);
  assert.deepEqual(searchCommands(items,'omöjligtresultat'),[]);
 });

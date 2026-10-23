@@ -12,7 +12,9 @@ Community source: [nimblegeek/budget-os-community](https://github.com/nimblegeek
 - **Spara:** savings goals, registered capital and monthly saving plans.
 - **Planera:** one monthly forecast that combines planned income and expenses with
   registered events, plus manual entry, Nordea CSV, income sources, scenarios and
-  backups. Each category shows what is registered, still planned or over budget.
+  backups. Each expense belongs to one shared budget category; category drilldown,
+  history filters, search and the forecast use the same mapping. Each category shows
+  what is registered, still planned or over budget.
 - **Skulder & stöd:** loans, repayment forecasts, manual debt progress and optional
   creditor/advisor workflows. Drafts and agreements do not execute payments or
   automatically contact creditors.

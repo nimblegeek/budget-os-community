@@ -7,6 +7,7 @@ import SimpleBudget from './simple-budget';
 import BudgetCostPicker from './budget-cost-picker';
 import MonthlyForecast from './monthly-forecast';
 import {monthlyForecast} from '../lib/monthly-forecast';
+import {type ExpenseCategoryKey} from '../lib/expense-categories';
 
 type Props = {
  data: Budget; range: DateRange; onRange: (range: DateRange) => void;
@@ -15,7 +16,7 @@ type Props = {
  onDelete: (item: Transaction) => void;
  onIncome: (item?: Budget['incomes'][number]) => void;
  onExpense: (item?: Budget['expenses'][number]) => void;
- onHistory: (kind?: 'income' | 'expense') => void;
+ onHistory: (kind?: 'income' | 'expense', category?:ExpenseCategoryKey) => void;
  planRequested?: number; children?: React.ReactNode;
  persist?: (data:Budget,action:string)=>Promise<void>;
 };

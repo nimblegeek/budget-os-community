@@ -26,7 +26,7 @@ test('Nordea full export layout handles BOM, CRLF, empty columns, Swedish amount
     ['2026-09-30',1234.56,'Lön TEST'],['2026-09-29',-10.25,'Kortköp TEST; åäö'],
   ]);
   assert.ok(result.transactions.every(t=>t.source==='Nordea test.csv'&&t.reviewed===false));
-  assert.equal(result.transactions[0].category,'Mat');
+  assert.equal(result.transactions[0].category,'Mat & livsmedel');
   assert.equal(result.transactions[2].kind,'income');
 });
 test('Nordea reimport matches ISO dates and preserves legitimate repeated payments',()=>{
@@ -41,7 +41,7 @@ test('Nordea reimport matches ISO dates and preserves legitimate repeated paymen
   assert.equal(overlap.transactions.length,3);
   assert.deepEqual(initial,snapshot);
 });
-test('Bank import preview, duplicates, pending, invalid rows',()=>{const csv='Bokföringsdag;Belopp;Rubrik\n2026-10-01;-125,50;COOP\n2026-10-01;-125,50;COOP\nReserverat;-10;ICA\nfoo;20;Other';const a=importBankCSV(csv);assert.equal(a.transactions.length,2);assert.equal(a.pending,1);assert.deepEqual(a.errors,[5]);assert.equal(a.transactions[0].category,'Mat');assert.equal(importBankCSV(csv,a.transactions).duplicates,2)});
+test('Bank import preview, duplicates, pending, invalid rows',()=>{const csv='Bokföringsdag;Belopp;Rubrik\n2026-10-01;-125,50;COOP\n2026-10-01;-125,50;COOP\nReserverat;-10;ICA\nfoo;20;Other';const a=importBankCSV(csv);assert.equal(a.transactions.length,2);assert.equal(a.pending,1);assert.deepEqual(a.errors,[5]);assert.equal(a.transactions[0].category,'Mat & livsmedel');assert.equal(importBankCSV(csv,a.transactions).duplicates,2)});
 test('Transfers and collection retained but excluded from normal',()=>{const a=importBankCSV('Datum;Belopp;Beskrivning\n2026-10-01;-100;Överföring\n2026-10-02;-200;COEO INKA');assert.equal(a.transactions[0].kind,'transfer');assert.equal(a.transactions[1].excluded,true)});
 test('Annuity examples',()=>{assert.ok(Math.abs(annuity(239716,8,10)-2908.41656)<.01);assert.equal(annuity(12000,0,1),1000)});
 test('Payoff respects unknown interest and amortization',()=>{assert.ok(payoff([{balance:100,rate:null,monthly:10}]).error);assert.equal(payoff([{balance:1200,rate:0,monthly:100}],0).months,12);assert.equal(payoff([{balance:1200,rate:0,monthly:100}],100).months,6);assert.ok(payoff([{balance:10000,rate:24,monthly:10}],0).error)});

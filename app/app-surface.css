@@ -38,6 +38,13 @@ body:has(.app-main) .iconbtn{min-height:44px;min-width:44px}
 .period-disclosure .period-filter{margin-bottom:12px;padding:14px}
 .transaction-list .toolbar{padding:12px 0;gap:10px}
 .transaction-list .search{min-width:0}
+.transaction-category-search{padding:14px 0;border-bottom:1px solid var(--line)}
+.transaction-category-search>span{display:block;margin-bottom:10px;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.transaction-category-search>div{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
+.transaction-category-search button{flex:0 0 auto;min-height:36px;padding:8px 11px;border:1px solid var(--line);border-radius:5px;font-size:10px;color:var(--muted)}
+.transaction-category-search button[aria-pressed="true"]{border-color:var(--green);background:var(--soft);color:var(--green)}
+.active-category{display:flex;align-items:center;gap:10px;min-height:44px;border-bottom:1px solid var(--line);font-size:11px}
+.active-category span{font-weight:600}.active-category strong{font-weight:400;color:var(--muted)}.active-category button{margin-left:auto;color:var(--green);min-height:36px;font-size:10px}
 .transaction-row{display:flex;align-items:center;gap:4px;border-bottom:1px solid var(--line)}
 .transaction-row .transaction{flex:1;min-width:0;border:0;padding:16px 0;gap:10px}
 .transaction-row .tile{display:none}

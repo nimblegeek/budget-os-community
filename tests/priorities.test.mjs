@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {defaultPriority,isPriorityExpense,expenseGroups,priorityTotal} from '../lib/priorities.ts';
 import {budgetCostGroups,costCategory,presetCostIds,selectedCostTotals} from '../lib/cost-selection.ts';
 import {emptyBudget} from '../lib/budget.ts';
+import {expenseCategoryKey,expenseCategoryLabel,transactionExpenseCategory} from '../lib/expense-categories.ts';
 test('Essentials default to priority without matching unrelated fees or Tele',()=>{
   for(const name of ['Mat','BRF Avgift','Hyra','Bolån - (ränta+amort)','El','Försäkringar','VA-Avfall','Hemförsäkring'])assert.equal(defaultPriority(name),true,name);
   for(const name of ['Tele','Software + AI','Krediter & blancolån','Kortavgift','Transport2','Fritids / förskola'])assert.equal(defaultPriority(name),false,name);
@@ -14,6 +15,14 @@ test('Cost categories are exclusive, preserve cents and never mix mortgage with 
  assert.equal(new Set(all).size,all.length);assert.equal(all.length,6);assert.ok(!all.includes('out'));
  assert.equal(costCategory('Bolån (ränta och amortering)'),'home');assert.equal(costCategory('Krediter & blancolån'),'credit');
  assert.equal(costCategory('Tele'),'phone');assert.equal(costCategory('Elhandel'),'utilities');assert.equal(costCategory('Hemförsäkring'),'insurance');assert.equal(costCategory('Oförutsedda avgifter'),'other');
+});
+test('Stored budget categories override names and legacy values still normalize',()=>{
+ const rows=[{...expense('custom','Valfritt namn',100),category:'home'},{...expense('misleading','Hyra till annan',200),category:'other'}];
+ assert.deepEqual(budgetCostGroups(rows).map(group=>[group.key,group.items.map(item=>item.id)]),[['home',['custom']],['other',['misleading']]]);
+ assert.equal(expenseCategoryKey('Mat & livsmedel'),'food');assert.equal(expenseCategoryLabel('BRF Avgift'),'Boende');
+ assert.equal(transactionExpenseCategory('Övriga utgifter','Hyra till annan'),'other');
+ assert.equal(transactionExpenseCategory('Ej kategoriserad','Hemförsäkring'),'insurance');
+ assert.equal(isPriorityExpense(rows[0]),true);assert.equal(isPriorityExpense(rows[1]),false);
 });
 test('Cost presets use real priority flags and credit group without double-counting or including excluded costs',()=>{
  assert.deepEqual(presetCostIds(costs,'priority'),['home','food','el','health']);
