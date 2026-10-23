@@ -148,11 +148,11 @@ test('Budget landing has one forecast balance and one monthly flow',()=>{
  assert.ok(html.includes(`>${kr(16500,2)}</output>`));
  assert.equal((html.match(/<details class="focus-step budget-plan"/g)||[]).length,1);
  assert.ok(!html.includes('<details open'));
- assert.ok(html.includes('Månadsplan'));assert.ok(html.includes('Lägg till'));assert.ok(html.includes('Det här påverkar kvar'));
- assert.ok(html.includes('Planerade utgifter som återstår'));assert.ok(html.includes('Senast registrerat'));
+ assert.ok(html.includes('Månadsplan'));assert.ok(html.includes('Lägg till'));assert.ok(html.includes('Budget vs utfall'));
+ assert.ok(html.includes('planerade utgifter återstår'));assert.ok(html.includes('Senast registrerat'));
  assert.ok(!html.includes('Importera CSV'));assert.ok(!html.includes('Ramar'));
  assert.ok(html.includes('Visa månadens inkomster'));assert.ok(html.includes('Visa månadens utgifter'));
- assert.ok(html.includes('<details class="focus-explainer">'));assert.ok(html.includes('Det som ännu inte är betalt ligger kvar i prognosen.'));
+ assert.ok(html.includes('<details class="focus-explainer">'));assert.ok(html.includes('utgå från kontosaldot'));
 });
 test('Budget forecast combines registered events with remaining plan without counting costs twice',()=>{
  const rows=[tx('Lön',28000,'income'),tx('Hyra',-8500,'expense'),{...tx('Inkasso',-1000,'expense'),excluded:true},tx('Återköp',100,'expense'),tx('Sparöverföring',-500,'transfer'),tx('Annan månad',-900,'expense','2026-09-30')];
@@ -187,6 +187,17 @@ test('Monthly forecast explains category progress, refunds, extra income and unp
  assert.equal(forecast.rows.find(row=>row.key==='other').actual,500);
  assert.equal(monthlyForecast({...budget,transactions:[...budget.transactions,{...tx('Utanför',-9999,'expense'),excluded:true}]},focusProps.range).forecastRemaining,16700);
  assert.deepEqual(budget,before);
+});
+test('Budget month assignment separates bank date from monthly result',()=>{
+ const september={...tx('Sen bokning',-900,'expense','2026-10-02'),category:'Mat',budgetMonth:'2026-09'};
+ const october={...tx('Oktober',-200,'expense','2026-10-03'),category:'Mat'};
+ const sep=monthlyForecast({...data,transactions:[september,october]},{from:'2026-09-01',to:'2026-09-30'});
+ const oct=monthlyForecast({...data,transactions:[september,october]},focusProps.range);
+ assert.equal(sep.actualExpense,900);assert.equal(sep.shiftedIn.length,1);assert.equal(sep.shiftedOut.length,0);
+ assert.equal(oct.actualExpense,200);assert.equal(oct.shiftedIn.length,0);assert.equal(oct.shiftedOut.length,1);
+ assert.equal(september.date,'2026-10-02');
+ const html=focusHtml([september,october]);
+ assert.ok(html.includes('Periodiserat utfall'));assert.ok(html.includes('hör till september 2026'));
 });
 test('Quick entry category is optional disclosure without removing its form value',()=>{
  const html=renderToStaticMarkup(createElement(RecordFields,{fields:[{name:'amount',label:'Belopp',type:'number',value:''},{name:'category',label:'Kategori',advanced:true,value:'Mat',options:['Mat','Övrigt']}]}));

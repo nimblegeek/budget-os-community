@@ -1,13 +1,20 @@
 import {type Budget,sum} from './budget';
-import {type DateRange,inDateRange} from './date-range';
+import {type DateRange,inDateRange,isCalendarMonth} from './date-range';
 import {costCategories,plannedExpenseCategory,type CostCategory} from './cost-selection';
 import {transactionExpenseCategory} from './expense-categories';
 
 const cents=(n:number)=>Math.round(n*100)/100;
 const transactionCategory=(transaction:Budget['transactions'][number]):CostCategory=>transactionExpenseCategory(transaction.category,transaction.description);
+export const transactionBudgetMonth=(transaction:Budget['transactions'][number])=>transaction.budgetMonth||transaction.date.slice(0,7);
+export const budgetMonthName=(value:string)=>new Intl.DateTimeFormat('sv-SE',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(value+'-01T12:00:00Z'));
 
 export function monthlyForecast(data:Budget,range:DateRange){
- const transactions=data.transactions.filter(row=>inDateRange(row.date,range)&&!row.excluded);
+ const calendarMonth=isCalendarMonth(range),month=range.from.slice(0,7);
+ const belongs=(row:Budget['transactions'][number])=>calendarMonth?transactionBudgetMonth(row)===month:inDateRange(row.date,range);
+ const transactions=data.transactions.filter(row=>belongs(row)&&!row.excluded);
+ const bookedTransactions=data.transactions.filter(row=>inDateRange(row.date,range)&&!row.excluded);
+ const shiftedIn=calendarMonth?transactions.filter(row=>row.date.slice(0,7)!==month):[];
+ const shiftedOut=calendarMonth?bookedTransactions.filter(row=>transactionBudgetMonth(row)!==month):[];
  const plannedIncome=sum(data.incomes.map(row=>row.amount));
  const actualIncome=cents(transactions.filter(row=>row.kind==='income').reduce((total,row)=>total+row.amount,0));
  const plannedBy=new Map<CostCategory,number>(),actualBy=new Map<CostCategory,number>();
@@ -24,5 +31,6 @@ export function monthlyForecast(data:Budget,range:DateRange){
  }).filter(row=>row.planned!==0||row.actual!==0);
  const actualExpense=sum(rows.map(row=>row.actual)),forecastExpense=sum(rows.map(row=>row.expected));
  const forecastIncome=Math.max(plannedIncome,actualIncome),forecastRemaining=sum([forecastIncome,-forecastExpense]);
- return {rows,transactions,plannedIncome,actualIncome,forecastIncome,actualExpense,forecastExpense,remainingPlanned:sum([forecastExpense,-actualExpense]),actualRemaining:sum([actualIncome,-actualExpense]),forecastRemaining,incomeRemaining:Math.max(0,sum([forecastIncome,-actualIncome])),overPlan:sum(rows.map(row=>row.over))};
+ const plannedExpense=sum(rows.map(row=>row.planned));
+ return {rows,transactions,bookedTransactions,shiftedIn,shiftedOut,plannedIncome,plannedExpense,plannedRemaining:sum([plannedIncome,-plannedExpense]),actualIncome,actualExpense,actualRemaining:sum([actualIncome,-actualExpense]),forecastIncome,forecastExpense,forecastRemaining,remainingPlanned:sum([forecastExpense,-actualExpense]),incomeRemaining:Math.max(0,sum([forecastIncome,-actualIncome])),overPlan:sum(rows.map(row=>row.over))};
 }

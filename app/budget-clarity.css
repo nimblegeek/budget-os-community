@@ -22,9 +22,9 @@
 .monthly-forecast>header span{display:block;text-transform:uppercase;letter-spacing:1px;font-size:9px;color:var(--muted)}
 .monthly-forecast h2{font-size:16px;font-weight:500;letter-spacing:-.4px;margin:6px 0 0}
 .monthly-forecast>header button{display:flex;align-items:center;gap:4px;min-height:40px;font-size:10px;color:var(--muted);flex-shrink:0}
-.forecast-equation{display:grid;grid-template-columns:minmax(0,1fr) 14px minmax(0,1fr) 14px minmax(0,1fr);align-items:center;gap:6px;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.forecast-equation>span{color:var(--muted);text-align:center}
-.forecast-equation div{min-width:0}
+.forecast-equation{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:8px;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.forecast-equation div{min-width:0;padding:10px;border:1px solid var(--line);border-radius:5px}
+.forecast-equation .forecast-primary{background:var(--soft);border-color:var(--green)}
 .forecast-equation div>span,.forecast-equation small{display:block;font-size:9px;color:var(--muted);line-height:1.5}
 .forecast-equation strong{display:block;font-size:14px;font-weight:500;margin:6px 0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 .forecast-groups{margin-top:4px}
@@ -85,8 +85,7 @@
  .budget-plan{scroll-margin-top:16px}
  .monthly-forecast{padding:14px;margin-top:14px}
  .monthly-forecast h2{font-size:14px}
- .forecast-equation{grid-template-columns:1fr;gap:2px;text-align:left}
- .forecast-equation>span{transform:rotate(90deg);height:14px}
+ .forecast-equation{grid-template-columns:1fr;gap:8px;text-align:left}
  .forecast-equation div{padding:5px 0}
  .forecast-equation strong{font-size:13px;margin:4px 0}
  .budget-comparison{margin-top:12px}
