@@ -1,4 +1,4 @@
-:root{color-scheme:light;--chart-base:#7c897b;--chart-scenario:#284e3e}
+:root{color-scheme:light;--chart-base:#7c897b;--chart-scenario:#315443}
 html[data-theme=dark]{color-scheme:dark;--ink:#e6ece8;--muted:#a6b3ab;--green:#b2d298;--line:#35433c;--soft:#202b25;--sage:#243629;--orange:#e8b879;--surface:#19231e;--canvas:#111914;--chart-base:#91a8b7;--chart-scenario:#b2d298;background:var(--canvas)}
 .theme-toggle{min-width:44px;min-height:44px;border:1px solid var(--line);color:var(--ink)}
 .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}

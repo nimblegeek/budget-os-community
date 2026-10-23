@@ -10,7 +10,7 @@
 .login>.budget-brand{margin-bottom:48px}
 .login .cl-headerTitle{font-size:24px;line-height:1.3;letter-spacing:-.5px;margin:0}
 .login .cl-headerSubtitle{font-size:13px;line-height:1.6;margin:10px 0 0}
-.topbar{position:sticky;top:0;z-index:15;background:#fffffff2;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);gap:12px}
+.topbar{position:sticky;top:0;z-index:15;background:#f2f1ebf2;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);gap:12px}
 .topbar .screen-signature{gap:16px;min-width:0}
 .screen-location{display:flex;align-items:center;gap:9px;min-width:0;border-left:1px solid var(--line);padding-left:16px;font-size:11px}
 html{scroll-padding-top:88px}

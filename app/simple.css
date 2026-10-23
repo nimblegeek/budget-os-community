@@ -1,5 +1,5 @@
 /* A quieter editing surface. All underlying records and calculations are unchanged. */
-:root{--surface:#fff;--canvas:#fff}
+:root{--surface:#faf9f5;--canvas:#f2f1eb}
 .main{max-width:1320px}
 .intro .eyebrow,.sidenote{display:none}
 .intro{margin:26px 0 24px}.intro p{font-size:15px}.intro h1{font-size:30px}
