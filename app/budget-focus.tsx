@@ -1,11 +1,12 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Minus, Info, SlidersHorizontal, Trash2 } from 'lucide-react';
-import { type Budget, type Transaction, kr, totals, sum } from '../lib/budget';
+import { type Budget, type Transaction, kr, totals } from '../lib/budget';
 import { type DateRange, monthRange, periodSummary } from '../lib/date-range';
 import SimpleBudget from './simple-budget';
-import BudgetComparison from './budget-comparison';
 import BudgetCostPicker from './budget-cost-picker';
+import MonthlyForecast from './monthly-forecast';
+import {monthlyForecast} from '../lib/monthly-forecast';
 
 type Props = {
  data: Budget; range: DateRange; onRange: (range: DateRange) => void;
@@ -28,43 +29,41 @@ export default function BudgetFocus({data,range,onRange,editable,busy,onAdd,onEd
   const frame=requestAnimationFrame(()=>planRef.current?.scrollIntoView({behavior:'smooth',block:'start'}));
   return()=>cancelAnimationFrame(frame);
  },[planRequested]);
- const actual=periodSummary(data.transactions,range),plan=totals(data);
- const remaining=sum([actual.income,-actual.expense]);
+ const actual=periodSummary(data.transactions,range),plan=totals(data),forecast=monthlyForecast(data,range);
+ const remaining=forecast.forecastRemaining;
  const rows=actual.transactions.filter(x=>x.kind!=='transfer').sort((a,b)=>b.date.localeCompare(a.date));
- const incomeCount=rows.filter(x=>x.kind==='income').length,expenseCount=rows.filter(x=>x.kind==='expense').length;
+ const incomeCount=forecast.transactions.filter(x=>x.kind==='income').length,expenseCount=forecast.transactions.filter(x=>x.kind==='expense').length;
  const month=new Intl.DateTimeFormat('sv-SE',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(range.from+'T12:00:00Z'));
  const isNow=range.from===monthRange().from;
- function showPlan(){setPlanOpen(true);planRef.current?.scrollIntoView({behavior:'smooth',block:'start'})}
  return <div className="budget-focus budget-focus--clarity">
   <div className="focus-month">
    <button aria-label="Föregående budgetmånad" onClick={()=>onRange(monthRange(range.from,-1))}><ChevronLeft size={18}/></button>
    <span>{month}</span>
    <button aria-label="Nästa budgetmånad" onClick={()=>onRange(monthRange(range.from,1))}><ChevronRight size={18}/></button>
   </div>
-  <section className="focus-balance" aria-label="Månadens kvar-belopp">
-   <span>{isNow?'Kvar denna månad':'Kvar vald månad'}</span>
+  <section className="focus-balance" aria-label="Månadens beräknade kvar-belopp">
+   <span>{isNow?'Beräknat kvar denna månad':'Beräknat kvar vald månad'}</span>
    <output aria-live="polite" aria-atomic="true" className={remaining<0?'negative':''}>{kr(remaining,2)}</output>
-   <p className="balance-caption">Registrerade inkomster − registrerade utgifter</p>
+   <p className="balance-caption">Efter registrerade utgifter och det som återstår i månadsplanen</p>
    <div className="balance-equation">
-    <button onClick={()=>onHistory('income')} aria-label={'Visa månadens inkomster, '+kr(actual.income,2)}><strong>{kr(actual.income,2)}</strong><small>{incomeCount} {incomeCount===1?'inkomst':'inkomster'} <ChevronRight size={11}/></small></button>
+    <button onClick={()=>onHistory('income')} aria-label={'Visa månadens inkomster, '+kr(forecast.actualIncome,2)}><strong>{kr(forecast.actualIncome,2)}</strong><small>{incomeCount} {incomeCount===1?'inkomst':'inkomster'} <ChevronRight size={11}/></small></button>
     <span aria-hidden="true">−</span>
-    <button onClick={()=>onHistory('expense')} aria-label={'Visa månadens utgifter, '+kr(actual.expense,2)}><strong>{actual.expense<0?'('+kr(actual.expense,2)+')':kr(actual.expense,2)}</strong><small>{expenseCount} {expenseCount===1?'utgift':'utgifter'} <ChevronRight size={11}/></small></button>
+    <button onClick={()=>onHistory('expense')} aria-label={'Visa månadens utgifter, '+kr(forecast.actualExpense,2)}><strong>{forecast.actualExpense<0?'('+kr(forecast.actualExpense,2)+')':kr(forecast.actualExpense,2)}</strong><small>{expenseCount} {expenseCount===1?'utgift':'utgifter'} <ChevronRight size={11}/></small></button>
    </div>
-   {(!rows.length||remaining<0)&&<p>{!rows.length?'Ingen data ännu. Lägg till en inkomst eller utgift.':'Utgifter överstiger inkomster.'}</p>}
-   <details className="focus-explainer"><summary><Info size={13} aria-hidden="true"/> Vad påverkar beloppet?</summary><p>Alla inkomster och utgifter i vald månad räknas, även återbetalningar, inkasso och engångsköp. Interna överföringar räknas inte. Kommande betalningar är inte avdragna. Beloppet är inte ditt banksaldo. Din budget jämförs med transaktionerna nedan; den räknas inte som en betalning.</p></details>
+   {remaining<0&&<p>Planerade och registrerade utgifter överstiger den förväntade inkomsten.</p>}
+   <details className="focus-explainer"><summary><Info size={13} aria-hidden="true"/> Så räknas prognosen</summary><p>Appen börjar med din månadsplan. Registrerade betalningar fyller på respektive utgiftskategori. Det som ännu inte är betalt ligger kvar i prognosen. Belopp över planen och utgifter utan budgetutrymme minskar kvar-beloppet direkt. Extra registrerad inkomst höjer prognosen. Interna överföringar och poster markerade utanför budgeten räknas inte. Beloppet är inte ditt banksaldo.</p></details>
   </section>
   <section className="focus-entry" aria-label="Lägg till transaktion">
    {editable?<div className="focus-add"><button disabled={busy} onClick={()=>onAdd(true)}><Plus size={19} aria-hidden="true"/> Inkomst</button><button disabled={busy} onClick={()=>onAdd(false)}><Minus size={19} aria-hidden="true"/> Utgift</button></div>:<p className="focus-help">Du har läsbehörighet.</p>}
   </section>
+  <MonthlyForecast data={data} range={range} onHistory={onHistory}/>
   <details className="focus-step budget-plan" ref={planRef} open={planOpen} onToggle={event=>setPlanOpen(event.currentTarget.open)}>
-   <summary><span className="focus-step-number" aria-hidden="true"><SlidersHorizontal size={17}/></span><span><strong>Din budget</strong><small>{data.incomes.length||data.expenses.length?kr(plan.remaining)+' kvar enligt planen':'Planera inkomster och kostnader'}</small></span><Plus size={17} aria-hidden="true"/></summary>
-   <div className="focus-detail"><p className="focus-help">Här bestämmer du vad du räknar med att få in och vad månaden får kosta. Ändra en rad eller lägg till en ny.</p><SimpleBudget data={data} editable={editable&&!busy} onIncome={onIncome} onExpense={onExpense}/>{children}</div>
+   <summary><span className="focus-step-number" aria-hidden="true"><SlidersHorizontal size={17}/></span><span><strong>Månadsplan</strong><small>{data.incomes.length||data.expenses.length?`${kr(plan.income)} in · ${kr(plan.expenses)} ut · ${kr(plan.remaining)} kvar`:'Planera inkomster och utgifter'}</small></span><Plus size={17} aria-hidden="true"/></summary>
+   <div className="focus-detail"><p className="focus-help">Här ändrar du det du räknar med varje månad. Prognosen ovan uppdateras direkt.</p><SimpleBudget data={data} editable={editable&&!busy} onIncome={onIncome} onExpense={onExpense}/><BudgetCostPicker data={data} editable={editable} busy={busy} persist={persist}/>{children}</div>
   </details>
-  <BudgetCostPicker data={data} editable={editable} busy={busy} persist={persist}/>
-  <BudgetComparison income={actual.income} expense={actual.expense} plannedIncome={plan.income} plannedExpense={plan.expenses} isCurrent={isNow} hasTransactions={!!rows.length} onHistory={onHistory} onPlan={showPlan}/>
   <section className="focus-mobile-transactions budget-recent" aria-labelledby="recent-transactions-heading">
-   <header><h2 id="recent-transactions-heading">Senaste transaktionerna</h2><button onClick={()=>onHistory()}>Visa alla <ChevronRight size={12}/></button></header>
-   {!rows.length&&<p className="focus-help">Inga registrerade betalningar i vald månad.</p>}
+   <header><h2 id="recent-transactions-heading">Senast registrerat</h2><button onClick={()=>onHistory()}>Alla händelser <ChevronRight size={12}/></button></header>
+   {!rows.length&&<p className="focus-help">Inga inkomster eller utgifter registrerade i vald månad.</p>}
    <div className="focus-mobile-rows">{(showAll?rows:rows.slice(0,3)).map(row=><div className="focus-mobile-row" key={row.id}>
     <button className="focus-mobile-edit" disabled={!editable||busy} aria-label={'Ändra transaktion: '+row.description} onClick={()=>onEdit(row)}>
      <span><strong>{row.description}</strong><small>{row.date.slice(8,10)}/{row.date.slice(5,7)} · {row.category}</small></span>

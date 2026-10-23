@@ -1,7 +1,7 @@
 import {type Budget,sum} from './budget';
 import {isPriorityExpense} from './priorities';
 type Expense=Budget['expenses'][number];
-export const costCategories=[{key:'home',label:'Boende'},{key:'food',label:'Mat & livsmedel'},{key:'utilities',label:'El, värme & vatten'},{key:'insurance',label:'Försäkringar'},{key:'phone',label:'Tele & abonnemang'},{key:'credit',label:'Krediter & lån'},{key:'transport',label:'Transport'},{key:'other',label:'Övriga kostnader'}] as const;
+export const costCategories=[{key:'home',label:'Boende'},{key:'food',label:'Mat & livsmedel'},{key:'utilities',label:'El, värme & vatten'},{key:'insurance',label:'Försäkringar'},{key:'phone',label:'Tele & abonnemang'},{key:'credit',label:'Krediter & lån'},{key:'transport',label:'Transport'},{key:'other',label:'Övriga utgifter'}] as const;
 export type CostCategory=typeof costCategories[number]['key'];
 const normalize=(text:string)=>text.toLocaleLowerCase('sv-SE').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
 // Visible name-based suggestions only; no new classification is written to storage.

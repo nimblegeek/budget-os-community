@@ -4,7 +4,7 @@ export const areas = {
  Investera:{number:'02',label:'Investera'},
  Planera:{number:'03',label:'Planera'},
  Översikt:{number:'03.1',label:'Budget'},
- Transaktioner:{number:'03.2',label:'Transaktioner'},
+ Transaktioner:{number:'03.2',label:'Historik & import'},
  Intäkter:{number:'03.3',label:'Intäkter'},
  Underlag:{number:'03.4',label:'Data & historik'},
  Stöd:{number:'04',label:'Skulder & stöd'},
@@ -16,7 +16,7 @@ export type Page=keyof typeof areas;
 export const featureGroups={
  spara:{page:'Sparande',label:'Spara',description:'Buffert, sparmål och månadssparande.',includes:'Sparmål · Månadssparande',pages:['Sparande']},
  investera:{page:'Investera',label:'Investera',description:'Långsiktig ekonomi. Portföljstöd kommer senare.',includes:'Kommande område',pages:['Investera']},
- planera:{page:'Planera',label:'Planera',description:'Budget, transaktioner, intäkter och simulering. Underlag och historik.',includes:'Budget · Intäkter · Transaktioner',pages:['Översikt','Transaktioner','Intäkter','Underlag']},
+ planera:{page:'Planera',label:'Planera',description:'Månadsplan, tydlig prognos, registrerade händelser och intäkter.',includes:'Budget · Historik · Intäkter',pages:['Översikt','Transaktioner','Intäkter','Underlag']},
  stöd:{page:'Stöd',label:'Skulder & stöd',description:'Lån och betalningar. Valfritt: borgenärer och rådgivarsamarbete.',includes:'Lån · Valfria stödverktyg',pages:['Skulder','Borgenärer','Samarbete']},
 } as const satisfies Record<string,{page:Page;label:string;description:string;includes:string;pages:readonly Page[]}>;
 export type Group=keyof typeof featureGroups;
@@ -34,8 +34,8 @@ export function pageTrail(page:Page):Page[]{
  return ['Start',...(parent&&parent!==page?[parent]:[])];
 }
 export const pageDescriptions:Partial<Record<Page,string>>={
- Översikt:'Sätt månadsbudgeten, prioritera viktiga kostnader och jämför med utfallet. Testa förändringar i simuleringen.',
- Transaktioner:'Lägg till, ändra och ta bort betalningar. Importera bank-CSV, granska och välj valfri period.',
+ Översikt:'Se beräknat kvar, registrerade utgifter och det som återstår i månadsplanen.',
+ Transaktioner:'Sök i historiken, granska poster och importera bank-CSV.',
  Intäkter:'Ordna inbetalningar per källa eller plattform. Följ fördelningen och skapa en delningsbild.',
  Underlag:'Säkerhetskopior, återställning, källunderlag och ändringshistorik. För alla, även utan rådgivare.',
  Skulder:'Totalskuld, månadsbetalningar och skuldresa. Hantera lån och simulera återbetalning eller samlingslån.',

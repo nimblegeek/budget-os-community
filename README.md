@@ -10,8 +10,9 @@ Community source: [nimblegeek/budget-os-community](https://github.com/nimblegeek
 ## What it does
 
 - **Spara:** savings goals, registered capital and monthly saving plans.
-- **Planera:** monthly budget, priority expenses, manual transactions, Nordea CSV,
-  income sources, actual-versus-plan overview, scenario simulation and backups.
+- **Planera:** one monthly forecast that combines planned income and expenses with
+  registered events, plus manual entry, Nordea CSV, income sources, scenarios and
+  backups. Each category shows what is registered, still planned or over budget.
 - **Skulder & stöd:** loans, repayment forecasts, manual debt progress and optional
   creditor/advisor workflows. Drafts and agreements do not execute payments or
   automatically contact creditors.
@@ -79,9 +80,13 @@ production database. It is for development **only** and must not be deployed.
 
 ## Data semantics
 
-Planned income/costs are separate from actual transactions. Income is positive,
-expenses negative, refunds retain their sign and transfers do not count as income
-or expenses. Values must be representable as whole öre; validation rejects finer
+Planned income/expenses are separate from actual transactions. The monthly forecast
+counts each planned category once, replaces its remaining amount as spending is
+registered, and immediately includes overspending, unplanned spending, refunds and
+extra income. Transactions explicitly marked outside the budget and transfers remain
+visible in history but do not affect the forecast. Income is positive, expenses
+negative and refunds retain their sign. Values must be representable as whole öre;
+validation rejects finer
 fractions. Workspace budgets and immutable snapshots are stored as versioned JSON
 in PostgreSQL, with optimistic revisions, atomic writes and SHA-256 checksums.
 Legacy normalized tables remain only for a gated one-time migration/recovery.
