@@ -290,7 +290,7 @@ test('Debt overview totals the same active loans including mortgages, retaining 
  assert.ok(html.includes(`>${kr(1010000.25,2)}</output>`));
  assert.ok(html.includes(`>${kr(7500.5,2)}</output>`));
  assert.equal((html.match(/<output/g)||[]).length,2);
- assert.ok(html.includes('inkl. bolån'));assert.ok(html.includes('Avslutade lån (1)'));
+ assert.ok(html.includes('Aktiva lån i översikten'));assert.ok(!html.includes('inkl. bolån'));assert.ok(html.includes('Avslutade lån (1)'));
  assert.ok(html.includes('<details class="debt-more">'));
  assert.equal(JSON.stringify(debts),before);
 });

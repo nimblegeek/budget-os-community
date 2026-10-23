@@ -23,7 +23,7 @@ export default function DebtFocus({debts,editable,busy,onAdd,onEdit,onDelete,onC
   <section className="debt-summary" aria-label="Skuldöversikt">
    <div className="debt-total"><span>Totalskuld</span><output aria-live="polite" aria-atomic="true">{kr(summary.balance,2)}</output></div>
    <div className="debt-monthly"><span>Månadsbetalning</span><output aria-live="polite" aria-atomic="true">{kr(summary.monthly,2)}</output></div>
-   <details className="focus-explainer"><summary><Info size={13} aria-hidden="true"/> Alla aktiva lån · inkl. bolån</summary><p>Angivna saldon och ordinarie månadsbetalningar för lån med skuld kvar. Inte automatiskt hämtat från banken. Betalningar registreras separat i Budget.</p></details>
+   <details className="focus-explainer"><summary><Info size={13} aria-hidden="true"/> Aktiva lån i översikten</summary><p>Totalsummorna bygger på de lån som finns registrerade här och fortfarande har skuld kvar. Uppgifterna hämtas inte automatiskt från banken. Betalningar följs upp separat i Budget.</p></details>
    {unverified>0&&<p className="debt-caution">{unverified===1?'Ett lån har äldre saldo.':`${unverified} lån har äldre saldon.`}</p>}
   </section>
   {editable?<button className="debt-add" disabled={busy} onClick={onAdd}><Plus size={19} aria-hidden="true"/> Lägg till lån</button>:<p className="focus-help">Du har läsbehörighet.</p>}
