@@ -15,17 +15,17 @@ export const areas = {
 } as const;
 export type Page=keyof typeof areas;
 export const featureGroups={
+ planera:{page:'Planera',label:'Planera',description:'Sätt budgetbelopp, följ utfallet och kategorisera registrerade händelser.',includes:'Budget · Budgetbelopp · Historik',pages:['Översikt','Budgetunderlag','Transaktioner','Intäkter','Underlag']},
  spara:{page:'Sparande',label:'Spara',description:'Buffert, sparmål och månadssparande.',includes:'Sparmål · Månadssparande',pages:['Sparande']},
  investera:{page:'Investera',label:'Investera',description:'Långsiktig ekonomi. Portföljstöd kommer senare.',includes:'Kommande område',pages:['Investera']},
- planera:{page:'Planera',label:'Planera',description:'Sätt budgetbelopp, följ utfallet och kategorisera registrerade händelser.',includes:'Budget · Budgetbelopp · Historik',pages:['Översikt','Budgetunderlag','Transaktioner','Intäkter','Underlag']},
  stöd:{page:'Stöd',label:'Skulder & stöd',description:'Lån och betalningar. Valfritt: borgenärer och rådgivarsamarbete.',includes:'Lån · Valfria stödverktyg',pages:['Skulder','Borgenärer','Samarbete']},
 } as const satisfies Record<string,{page:Page;label:string;description:string;includes:string;pages:readonly Page[]}>;
 export type Group=keyof typeof featureGroups;
 export const groupOrder=Object.keys(featureGroups) as Group[];
 export const pageOrder=Object.keys(areas) as Page[];
-export const sidebarPages:Page[]=['Start',...groupOrder.map(key=>featureGroups[key].page)];
-export const mobilePrimary:Page[]=['Start','Sparande','Planera'];
-export const mobileMore:Page[]=['Investera','Stöd'];
+export const sidebarPages:Page[]=['Översikt','Start','Sparande','Investera','Stöd'];
+export const mobilePrimary:Page[]=['Översikt','Transaktioner','Sparande'];
+export const mobileMore:Page[]=['Start','Budgetunderlag','Intäkter','Underlag','Investera','Stöd'];
 export function groupForPage(page:Page):Group|undefined{
  return groupOrder.find(key=>featureGroups[key].page===page||(featureGroups[key].pages as readonly Page[]).includes(page));
 }

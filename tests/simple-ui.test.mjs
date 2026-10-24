@@ -81,9 +81,9 @@ test('Home contains exactly four ordered cards, honest current-month actuals, an
  ],incomes:[{id:'p',name:'Plan',amount:90000}],goals:[{id:'g',name:'Goal',target:5000,saved:500,monthly:100}],debts:[{id:'d',name:'Debt',balance:12500,original:13000,rate:0,monthly:100,type:'Blanco',note:'',balanceVerified:true}]};
  const before=JSON.stringify(budget),html=renderToStaticMarkup(createElement(HomeHub,{data:budget,onNavigate:noop}));
  assert.equal((html.match(/class="hub-card hub-card--/g)||[]).length,4);
+ assert.ok(html.indexOf('Öppna Planera')<html.indexOf('Öppna Spara'));
  assert.ok(html.indexOf('Öppna Spara')<html.indexOf('Öppna Investera'));
- assert.ok(html.indexOf('Öppna Investera')<html.indexOf('Öppna Planera'));
- assert.ok(html.indexOf('Öppna Planera')<html.indexOf('Öppna Skulder'));
+ assert.ok(html.indexOf('Öppna Investera')<html.indexOf('Öppna Skulder'));
  for(const value of [kr(-199.75),kr(500),kr(12500)])assert.ok(html.includes(value));
  assert.ok(!html.includes(kr(90000)));assert.ok(html.includes('Kommande'));assert.ok(html.includes('Portföljstöd kommer senare'));
  assert.equal(JSON.stringify(budget),before);
@@ -112,11 +112,11 @@ test('Planning separates the monthly view from history/import and keeps advisor 
  assert.ok(!investment.includes('<output'));assert.ok(!investment.includes('köp'));
 });
 test('Every area has one consistent identifier and is reachable on mobile',()=>{
- assert.deepEqual(groupOrder.map(k=>featureGroups[k].label),['Spara','Investera','Planera','Skulder & stöd']);
+ assert.deepEqual(groupOrder.map(k=>featureGroups[k].label),['Planera','Spara','Investera','Skulder & stöd']);
  assert.equal(new Set(Object.values(areas).map(a=>a.number)).size,Object.keys(areas).length);
  const reachable=new Set([...mobilePrimary,...mobileMore,...groupOrder.flatMap(k=>[featureGroups[k].page,...featureGroups[k].pages])]);
  assert.deepEqual(reachable,new Set(Object.keys(areas)));
- assert.deepEqual(sidebarPages,['Start','Sparande','Investera','Planera','Stöd']);
+ assert.deepEqual(sidebarPages,['Översikt','Start','Sparande','Investera','Stöd']);
  for(const page of Object.keys(areas)){
   const html=renderToStaticMarkup(createElement(AreaHeading,{page}));
   assert.equal((html.match(/<h1/g)||[]).length,1);
@@ -167,7 +167,7 @@ test('Budget landing contains only the traceable budget-versus-actual flow',()=>
  const html=focusHtml();
  assert.equal((html.match(/class="monthly-forecast"/g)||[]).length,1);
  assert.ok(html.includes(kr(16500,2)));assert.ok(html.includes('Budget vs utfall'));
- assert.ok(html.includes('Kategorisera transaktioner'));assert.ok(html.includes('Öppna inkomster i Historik &amp; import'));
+ assert.ok(html.includes('Kategorisera'));assert.ok(html.includes('Beräknat kvar vid månadens slut'));assert.ok(html.includes('Öppna inkomster i Historik &amp; import'));
  assert.ok(!html.includes('Månadsplan'));assert.ok(!html.includes('Senast registrerat'));assert.ok(!html.includes('Lägg till inkomst'));
 });
 test('Budget forecast combines registered events with remaining plan without counting costs twice',()=>{
