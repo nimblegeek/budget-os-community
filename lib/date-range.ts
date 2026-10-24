@@ -37,6 +37,9 @@ export function isCalendarMonth(range: DateRange) {
   const month = monthRange(range.from);
   return range.from === month.from && range.to === month.to;
 }
+export function isPastCalendarMonth(range:DateRange,reference=stockholmDate()){
+  return isCalendarMonth(range)&&range.to<monthRange(reference).from;
+}
 export function dateRangeLabel(range: DateRange) {
   if (rangeError(range)) return 'Ogiltig period';
   const format = (date: string) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(date + 'T12:00:00Z'));

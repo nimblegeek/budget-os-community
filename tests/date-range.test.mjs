@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { stockholmDate, monthRange, rangeError, isCalendarMonth, periodSummary, transactionRange, dateRangeLabel } from '../lib/date-range.ts';
+import { stockholmDate, monthRange, rangeError, isCalendarMonth, isPastCalendarMonth, periodSummary, transactionRange, dateRangeLabel } from '../lib/date-range.ts';
 test('Month presets handle previous year, leap years and unequal month lengths',()=>{
   assert.deepEqual(monthRange('2026-10-31',-1),{from:'2026-09-01',to:'2026-09-30'});
   assert.deepEqual(monthRange('2026-01-15',-1),{from:'2025-12-01',to:'2025-12-31'});
@@ -43,6 +43,12 @@ test('Previous month, single day, empty and cross-year periods filter correctly'
 test('Only whole calendar months qualify for monthly budget comparison',()=>{
   assert.equal(isCalendarMonth(monthRange('2024-02-01')),true);
   for(const range of [{from:'2026-09-25',to:'2026-10-24'},{from:'2026-10-01',to:'2026-10-15'},{from:'2026-09-01',to:'2026-10-31'}])assert.equal(isCalendarMonth(range),false);
+});
+test('Past month detection distinguishes closed, current, future and custom periods',()=>{
+  assert.equal(isPastCalendarMonth(monthRange('2026-09-15'),'2026-10-24'),true);
+  assert.equal(isPastCalendarMonth(monthRange('2026-10-15'),'2026-10-24'),false);
+  assert.equal(isPastCalendarMonth(monthRange('2026-11-15'),'2026-10-24'),false);
+  assert.equal(isPastCalendarMonth({from:'2026-09-25',to:'2026-10-24'},'2026-10-24'),false);
 });
 test('Import view spans every imported date without mutating source order',()=>{
   const fallback=monthRange('2026-10-19');

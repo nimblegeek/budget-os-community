@@ -158,7 +158,7 @@ test('Collapsed extra fields remain in form with their existing values',()=>{
  const html=renderToStaticMarkup(createElement(RecordFields,{fields:[{name:'amount',label:'Belopp',type:'number',value:450},{name:'priority',label:'Prioritet',value:'Övrig',options:['Prioriterad','Övrig']},{name:'note',label:'Anteckning',value:'Bevara mig',optional:true}]}));
  assert.ok(html.includes('inputMode="decimal"'));assert.ok(html.includes('name="amount"'));assert.ok(html.includes('<details class="form-extra">'));assert.ok(html.includes('name="priority"'));assert.ok(html.includes('selected=""'));assert.ok(html.includes('value="Bevara mig"'));assert.ok(!html.includes('<details open'));
 });
-const focusProps={range:{from:'2026-10-01',to:'2026-10-31'},onRange:noop,editable:true,busy:false,onAdd:noop,onEdit:noop,onDelete:noop,onIncome:noop,onExpense:noop,onHistory:noop,onImport:noop};
+const focusProps={range:{from:'2026-10-01',to:'2026-10-31'},today:'2026-10-24',onRange:noop,editable:true,busy:false,onAdd:noop,onEdit:noop,onDelete:noop,onIncome:noop,onExpense:noop,onHistory:noop,onImport:noop};
 function focusHtml(transactions=[],overrides={}) {
  return renderToStaticMarkup(createElement(BudgetFocus,{...focusProps,data:{...data,transactions},...overrides}));
 }
@@ -178,6 +178,23 @@ test('Budget forecast combines registered events with remaining plan without cou
  const over=[tx('Lön',20000,'income'),{...tx('Mat',-4000,'expense'),category:'Mat'}];
  assert.ok(focusHtml(over).includes(kr(16000,2)));
  assert.ok(focusHtml(over.filter(x=>x.id!=='Mat')).includes(kr(16500,2)));
+});
+test('Closed months show actual outcome instead of carrying unused budget forward',()=>{
+ const rows=[tx('Septemberlön',18000,'income','2026-09-25'),{...tx('Septembermat',-3000,'expense','2026-09-28'),category:'Mat'}];
+ const html=focusHtml(rows,{range:{from:'2026-09-01',to:'2026-09-30'}});
+ assert.ok(html.includes('Avslutad månad'));assert.ok(html.includes('Månadens utfall'));
+ assert.ok(html.includes('Faktiskt kvar för månaden'));assert.ok(html.includes(kr(15000,2)));
+ assert.ok(html.includes(`${kr(1500,2)} sämre än budget`));assert.ok(html.includes('Jämför med budget'));
+ assert.ok(html.includes('500 kr under budget'));assert.ok(!html.includes('500 kr återstår'));
+ const current=focusHtml(rows.map(row=>({...row,date:'2026-10-20'})));
+ assert.ok(current.includes('Kvar vid månadens slut'));assert.ok(current.includes(kr(16500,2)));
+});
+test('Closed months flag transactions that still need review',()=>{
+ const row={...tx('Ogranskad',-100,'expense','2026-09-20'),reviewed:false,category:'Mat'};
+ const html=focusHtml([row],{range:{from:'2026-09-01',to:'2026-09-30'}});
+ assert.ok(html.includes('Granska · 1'));assert.ok(html.includes('Utfallet kan fortfarande ändras'));
+ const empty=focusHtml([],{range:{from:'2026-09-01',to:'2026-09-30'}});
+ assert.ok(empty.includes('Utfallet är därför inte komplett ännu'));
 });
 test('Negative budget result is explicit and the overview exposes no write controls',()=>{
  const budget={...emptyBudget,transactions:[tx('Köp',-123,'expense')]},html=focusHtml([],{editable:false,data:budget});

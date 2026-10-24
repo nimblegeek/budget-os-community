@@ -10,9 +10,10 @@ type Props={
  range:DateRange;
  onRange:(range:DateRange)=>void;
  onHistory:(kind?:'income'|'expense',category?:ExpenseCategoryKey)=>void;
+ today?:string;
 };
 
-export default function BudgetFocus({data,range,onRange,onHistory}:Props){
+export default function BudgetFocus({data,range,onRange,onHistory,today}:Props){
  const month=new Intl.DateTimeFormat('sv-SE',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(range.from+'T12:00:00Z'));
  return <div className="budget-focus budget-focus--clarity">
   <div className="focus-month">
@@ -20,6 +21,6 @@ export default function BudgetFocus({data,range,onRange,onHistory}:Props){
    <span>{month}</span>
    <button aria-label="Nästa budgetmånad" onClick={()=>onRange(monthRange(range.from,1))}><ChevronRight size={18}/></button>
   </div>
-  <MonthlyForecast data={data} range={range} onHistory={onHistory}/>
+  <MonthlyForecast data={data} range={range} onHistory={onHistory} today={today}/>
  </div>;
 }
