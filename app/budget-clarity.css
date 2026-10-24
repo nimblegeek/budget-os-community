@@ -22,17 +22,23 @@
 .monthly-forecast>header span{display:block;text-transform:uppercase;letter-spacing:1px;font-size:9px;color:var(--muted)}
 .monthly-forecast h2{font-size:16px;font-weight:500;letter-spacing:-.4px;margin:6px 0 0}
 .monthly-forecast>header button{display:flex;align-items:center;gap:4px;min-height:40px;padding:0 2px;font-size:10px;color:var(--muted);flex-shrink:0}
-.forecast-intro{font-size:11px;line-height:1.7;color:var(--muted);margin:-2px 0 20px;max-width:560px}
-.forecast-equation{padding:26px 0 22px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.forecast-equation .forecast-primary{min-width:0;text-align:center;padding:6px 16px 28px}
+.forecast-equation{padding:26px 0 12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.forecast-equation .forecast-primary{min-width:0;text-align:center;padding:6px 16px 26px}
 .forecast-equation .forecast-primary>span{display:block;text-transform:uppercase;letter-spacing:1px;font-size:9px;color:var(--muted)}
 .forecast-equation .forecast-primary output{display:block;margin:10px 0 8px;color:var(--green);font-size:clamp(32px,5.4vw,54px);font-weight:500;letter-spacing:-2.2px;line-height:1.05;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 .forecast-equation .forecast-primary output.negative{color:#d77968}
-.forecast-equation .forecast-primary small{display:block;color:var(--muted);font-size:10px;line-height:1.6}
-.forecast-support{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.forecast-support>div{min-width:0;padding:16px 18px;border:1px solid var(--line);border-radius:7px;background:color-mix(in srgb,var(--soft) 55%,transparent)}
-.forecast-support span,.forecast-support small{display:block;font-size:9px;color:var(--muted);line-height:1.55}
-.forecast-support strong{display:block;font-size:16px;font-weight:500;margin:8px 0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.forecast-equation .forecast-primary small{display:block;max-width:440px;margin:0 auto;color:var(--muted);font-size:10px;line-height:1.6}
+.forecast-math{border-top:1px solid var(--line)}
+.forecast-math>summary{display:flex;align-items:center;justify-content:center;gap:7px;min-height:48px;color:var(--muted);font-size:10px;cursor:pointer;list-style:none}
+.forecast-math>summary::-webkit-details-marker{display:none}
+.forecast-math>summary svg{transition:transform .15s}
+.forecast-math[open]>summary svg{transform:rotate(180deg)}
+.forecast-math dl{max-width:480px;margin:4px auto 0}
+.forecast-math dl>div{display:flex;justify-content:space-between;gap:18px;padding:9px 0;border-bottom:1px solid var(--line);font-size:10px}
+.forecast-math dt{color:var(--muted)}
+.forecast-math dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.forecast-math .forecast-math-total{padding:12px 0;border-bottom:0;color:var(--green);font-weight:500}
+.forecast-math>p{max-width:480px;margin:2px auto 14px;color:var(--muted);font-size:9px;line-height:1.65}
 .forecast-groups{margin-top:4px}
 .forecast-category{border-bottom:1px solid var(--line)}
 .forecast-category>summary{display:grid;grid-template-columns:minmax(0,1fr) auto 18px;align-items:center;gap:12px;min-height:66px;list-style:none;cursor:pointer;padding:10px 0}
@@ -111,13 +117,12 @@
  .monthly-forecast>header{align-items:center;margin-bottom:16px}
  .monthly-forecast h2{font-size:15px}
  .monthly-forecast>header button{min-height:44px}
- .forecast-intro{font-size:10px;line-height:1.65;margin-bottom:18px}
- .forecast-equation{padding:22px 0 20px}
- .forecast-equation .forecast-primary{padding:4px 4px 24px}
+ .forecast-equation{padding:22px 0 8px}
+ .forecast-equation .forecast-primary{padding:4px 4px 22px}
  .forecast-equation .forecast-primary output{font-size:clamp(34px,10.5vw,46px);letter-spacing:-1.8px;margin:12px 0 10px}
- .forecast-support{grid-template-columns:1fr;gap:12px}
- .forecast-support>div{padding:17px 18px;border-radius:8px}
- .forecast-support strong{font-size:17px;margin:8px 0}
+ .forecast-equation .forecast-primary small{max-width:300px}
+ .forecast-math>summary{min-height:52px}
+ .forecast-math dl>div{font-size:10px;padding:11px 0}
  .forecast-category>summary{grid-template-columns:minmax(0,1fr) auto 16px;gap:8px}.forecast-drilldown{padding-left:10px}
  .transaction-purpose{display:block;margin:0 0 12px}.transaction-purpose>p{margin:7px 0 10px}.transaction-purpose>div{width:100%}.transaction-purpose button{flex:1}
  .budget-comparison{margin-top:12px}

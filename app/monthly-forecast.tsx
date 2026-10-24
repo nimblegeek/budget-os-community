@@ -12,18 +12,23 @@ export default function MonthlyForecast({data,range,onHistory}:{data:Budget;rang
   <strong className={row.amount>0?'positive':''}>{row.amount>0?'+':''}{kr(row.amount,2)}</strong>
  </div>;
  return <section className="monthly-forecast" aria-label="Budget jämfört med utfall">
-  <header><div><span>Månadens ekonomi</span><h2>Budget vs utfall</h2></div><button onClick={()=>onHistory()}>Kategorisera <ChevronRight size={12}/></button></header>
-  <p className="forecast-intro">Prognosen visar vad som beräknas vara kvar när registrerade händelser och resten av månadens budget räknats in.</p>
+  <header><div><span>Budget &amp; utfall</span><h2>Månadens budget</h2></div><button onClick={()=>onHistory()}>Kategorisera <ChevronRight size={12}/></button></header>
   <div className="forecast-equation">
    <div className="forecast-primary">
-    <span>Beräknat kvar vid månadens slut</span>
+    <span>Kvar vid månadens slut</span>
     <output aria-live="polite" className={forecast.forecastRemaining<0?'negative':''}>{kr(forecast.forecastRemaining,2)}</output>
-    <small>{kr(forecast.forecastIncome)} förväntat in · {kr(forecast.forecastExpense)} beräknat ut</small>
+    <small>När registrerade utgifter och resten av månadens budget är betalda.</small>
    </div>
-   <div className="forecast-support">
-    <div><span>Enligt din budget</span><strong>{kr(forecast.plannedRemaining,2)}</strong><small>{kr(forecast.plannedIncome)} planerat in − {kr(forecast.plannedExpense)} planerat ut</small></div>
-    <div><span>Registrerat netto hittills</span><strong>{kr(forecast.actualRemaining,2)}</strong><small>{kr(forecast.actualIncome)} registrerat in − {kr(forecast.actualExpense)} registrerat ut</small></div>
-   </div>
+   <details className="forecast-math">
+    <summary>Så räknas det <ChevronDown size={14}/></summary>
+    <dl>
+     <div><dt>Inkomster som räknas med</dt><dd>{kr(forecast.forecastIncome,2)}</dd></div>
+     <div><dt>Utgifter registrerade hittills</dt><dd>− {kr(forecast.actualExpense,2)}</dd></div>
+     <div><dt>Utgifter kvar enligt budget</dt><dd>− {kr(forecast.remainingPlanned,2)}</dd></div>
+     <div className="forecast-math-total"><dt>Kvar vid månadens slut</dt><dd>{kr(forecast.forecastRemaining,2)}</dd></div>
+    </dl>
+    <p>För inkomster används det högsta av budgeterat och registrerat belopp. Om en utgiftskategori går över budget räknas det högre utfallet.</p>
+   </details>
   </div>
   <div className="forecast-groups">
    <details className="forecast-category">

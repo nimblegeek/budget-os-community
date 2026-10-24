@@ -54,7 +54,7 @@ test('Four separately registered mortgage payments reconcile with one mortgage b
 test('Budget surface keeps one budget-versus-actual overview and transaction drilldowns',()=>{
  const range=monthRange(),data={...emptyBudget,incomes:[{id:'p',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''}],transactions:[{id:'t',date:range.from,description:'Utgift',amount:-100,kind:'expense',category:'Mat',source:'Test',reviewed:true,excluded:false}]};
  const html=renderToStaticMarkup(createElement(BudgetFocus,{data,range,onRange:noop,onHistory:noop}));
- assert.ok(html.includes('Budget vs utfall'));assert.ok(html.includes('17 000,00 kr'));
+ assert.ok(html.includes('Budget &amp; utfall'));assert.ok(html.includes('17 000,00 kr'));
  assert.ok(html.includes('Utgift'));assert.ok(html.includes('Öppna och kategorisera'));
  assert.ok(!html.includes('Månadsplan'));assert.ok(!html.includes('Välj och jämför planerade utgifter'));
 });
@@ -166,8 +166,8 @@ const tx=(id,amount,kind,date='2026-10-20')=>({id,amount,kind,date,description:i
 test('Budget landing contains only the traceable budget-versus-actual flow',()=>{
  const html=focusHtml();
  assert.equal((html.match(/class="monthly-forecast"/g)||[]).length,1);
- assert.ok(html.includes(kr(16500,2)));assert.ok(html.includes('Budget vs utfall'));
- assert.ok(html.includes('Kategorisera'));assert.ok(html.includes('Beräknat kvar vid månadens slut'));assert.ok(html.includes('Öppna inkomster i Historik &amp; import'));
+ assert.ok(html.includes(kr(16500,2)));assert.ok(html.includes('Månadens budget'));
+ assert.ok(html.includes('Kategorisera'));assert.ok(html.includes('Kvar vid månadens slut'));assert.ok(html.includes('Så räknas det'));assert.ok(html.includes('Öppna inkomster i Historik &amp; import'));
  assert.ok(!html.includes('Månadsplan'));assert.ok(!html.includes('Senast registrerat'));assert.ok(!html.includes('Lägg till inkomst'));
 });
 test('Budget forecast combines registered events with remaining plan without counting costs twice',()=>{
