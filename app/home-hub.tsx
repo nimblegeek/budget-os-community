@@ -1,7 +1,8 @@
 'use client';
 import {ArrowUpRight,PiggyBank,ChartNoAxesCombined,SlidersHorizontal,LifeBuoy,ArrowLeft,ChevronRight} from 'lucide-react';
 import {type Budget,kr,sum} from '../lib/budget';
-import {monthRange,periodSummary} from '../lib/date-range';
+import {monthRange} from '../lib/date-range';
+import {monthlyBalance} from '../lib/monthly-forecast';
 import {areas,featureGroups,groupOrder,pageDescriptions,pageTrail,type Group,type Page} from '../lib/navigation';
 const icons={spara:PiggyBank,investera:ChartNoAxesCombined,planera:SlidersHorizontal,stöd:LifeBuoy};
 export function PageTrail({page,onNavigate}:{page:Page;onNavigate:(page:Page)=>void}){
@@ -9,11 +10,11 @@ export function PageTrail({page,onNavigate}:{page:Page;onNavigate:(page:Page)=>v
  return <nav className="hub-breadcrumb" aria-label="Du är här">{trail.map((parent,i)=><span key={parent}>{i>0&&<ChevronRight size={11} aria-hidden="true"/>}<button onClick={()=>onNavigate(parent)} aria-label={parent==='Start'?'Till startsidan':'Till '+areas[parent].label}>{i===0&&<ArrowLeft size={12} aria-hidden="true"/>}{areas[parent].label}</button></span>)}</nav>;
 }
 export default function HomeHub({data,onNavigate}:{data:Budget;onNavigate:(page:Page)=>void}){
- const actual=periodSummary(data.transactions,monthRange());
+ const actual=monthlyBalance(data,monthRange());
  const info:Record<Group,{value:string;label:string}>={
   spara:{value:kr(sum(data.goals.map(g=>g.saved))),label:'Registrerat sparande'},
   investera:{value:'Kommande',label:'Ingen portfölj kopplad'},
-  planera:{value:kr(sum([actual.income,-actual.expense])),label:'Kvar denna månad'},
+  planera:{value:kr(actual.hasOpeningBalance?actual.forecastClosing:actual.forecastRemaining),label:actual.hasOpeningBalance?'Beräknat saldo vid månadsslut':'Månadens prognos · saldo saknas'},
   stöd:{value:kr(sum(data.debts.map(d=>d.balance))),label:'Registrerad totalskuld'},
  };
  return <section className="home-hub" aria-label="Fyra områden för din ekonomi"><div className="hub-intro"><h2>Din ekonomi.</h2></div><div className="hub-cards">{groupOrder.map(key=>{

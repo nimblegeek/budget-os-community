@@ -8,7 +8,7 @@ import BudgetFocus from '../app/budget-focus.tsx';
 import BudgetCostPicker from '../app/budget-cost-picker.tsx';
 import DebtFocus from '../app/debt-focus.tsx';
 import {debtAttackOrder} from '../lib/debt-order.ts';
-import {monthlyForecast} from '../lib/monthly-forecast.ts';
+import {monthlyBalance,monthlyForecast} from '../lib/monthly-forecast.ts';
 import SavingsFocus from '../app/savings-focus.tsx';
 import AreaHeading from '../app/area-heading.tsx';
 import HomeHub,{GroupHub,PageTrail} from '../app/home-hub.tsx';
@@ -52,8 +52,8 @@ test('Four separately registered mortgage payments reconcile with one mortgage b
  assert.equal(forecast.rows.find(row=>row.key==='credit'),undefined);
 });
 test('Budget surface keeps one budget-versus-actual overview and transaction drilldowns',()=>{
- const range=monthRange(),data={...emptyBudget,incomes:[{id:'p',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''}],transactions:[{id:'t',date:range.from,description:'Utgift',amount:-100,kind:'expense',category:'Mat',source:'Test',reviewed:true,excluded:false}]};
- const html=renderToStaticMarkup(createElement(BudgetFocus,{data,range,onRange:noop,onHistory:noop}));
+ const range={from:'2026-10-01',to:'2026-10-31'},data={...emptyBudget,incomes:[{id:'p',name:'Lön',amount:20000}],expenses:[{id:'m',name:'Mat',amount:3000,frame:3000,status:'Ram',note:''}],transactions:[{id:'t',date:'2026-10-10',description:'Utgift',amount:-100,kind:'expense',category:'Mat',source:'Test',reviewed:true,excluded:false}]};
+ const html=renderToStaticMarkup(createElement(BudgetFocus,{data,range,today:'2026-10-10',onRange:noop,onHistory:noop}));
  assert.ok(html.includes('Budget &amp; utfall'));assert.ok(html.includes('17 000,00 kr'));
  assert.ok(html.includes('Utgift'));assert.ok(html.includes('Öppna och kategorisera'));
  assert.ok(!html.includes('Månadsplan'));assert.ok(!html.includes('Välj och jämför planerade utgifter'));
@@ -72,7 +72,7 @@ test('Public landing is a separate presentation, links to JAS and explains priva
  assert.ok(html.includes('href="#sa-funkar-det"'));assert.ok(html.includes('id="sa-funkar-det"'));
  assert.ok(!html.includes('iframe'));assert.ok(!html.includes('test.csv'));assert.ok(!html.includes('owner@'));
 });
-test('Home contains exactly four ordered cards, honest current-month actuals, and no fabricated investment balance',()=>{
+test('Home contains exactly four ordered cards, the current forecast, and no fabricated investment balance',()=>{
  const date=monthRange().from;
  const budget={...emptyBudget,transactions:[
   {id:'i',date,description:'Income',amount:1000.25,kind:'income',category:'',reviewed:true,source:'Test',excluded:false},
@@ -84,8 +84,8 @@ test('Home contains exactly four ordered cards, honest current-month actuals, an
  assert.ok(html.indexOf('Öppna Planera')<html.indexOf('Öppna Spara'));
  assert.ok(html.indexOf('Öppna Spara')<html.indexOf('Öppna Investera'));
  assert.ok(html.indexOf('Öppna Investera')<html.indexOf('Öppna Skulder'));
- for(const value of [kr(-199.75),kr(500),kr(12500)])assert.ok(html.includes(value));
- assert.ok(!html.includes(kr(90000)));assert.ok(html.includes('Kommande'));assert.ok(html.includes('Portföljstöd kommer senare'));
+ for(const value of [kr(89900),kr(500),kr(12500)])assert.ok(html.includes(value));
+ assert.ok(html.includes('Månadens prognos · saldo saknas'));assert.ok(html.includes('Kommande'));assert.ok(html.includes('Portföljstöd kommer senare'));
  assert.equal(JSON.stringify(budget),before);
 });
 test('Every existing function has one main group and breadcrumbs back to that group and home',()=>{
@@ -158,16 +158,16 @@ test('Collapsed extra fields remain in form with their existing values',()=>{
  const html=renderToStaticMarkup(createElement(RecordFields,{fields:[{name:'amount',label:'Belopp',type:'number',value:450},{name:'priority',label:'Prioritet',value:'Övrig',options:['Prioriterad','Övrig']},{name:'note',label:'Anteckning',value:'Bevara mig',optional:true}]}));
  assert.ok(html.includes('inputMode="decimal"'));assert.ok(html.includes('name="amount"'));assert.ok(html.includes('<details class="form-extra">'));assert.ok(html.includes('name="priority"'));assert.ok(html.includes('selected=""'));assert.ok(html.includes('value="Bevara mig"'));assert.ok(!html.includes('<details open'));
 });
-const focusProps={range:{from:'2026-10-01',to:'2026-10-31'},today:'2026-10-24',onRange:noop,editable:true,busy:false,onAdd:noop,onEdit:noop,onDelete:noop,onIncome:noop,onExpense:noop,onHistory:noop,onImport:noop};
+const focusProps={range:{from:'2026-10-01',to:'2026-10-31'},today:'2026-10-10',onRange:noop,editable:true,busy:false,onAdd:noop,onEdit:noop,onDelete:noop,onIncome:noop,onExpense:noop,onHistory:noop,onImport:noop};
 function focusHtml(transactions=[],overrides={}) {
  return renderToStaticMarkup(createElement(BudgetFocus,{...focusProps,data:{...data,transactions},...overrides}));
 }
-const tx=(id,amount,kind,date='2026-10-20')=>({id,amount,kind,date,description:id,category:'Test',excluded:false,reviewed:true,source:'Test'});
+const tx=(id,amount,kind,date='2026-10-10')=>({id,amount,kind,date,description:id,category:'Test',excluded:false,reviewed:true,source:'Test'});
 test('Budget landing contains only the traceable budget-versus-actual flow',()=>{
  const html=focusHtml();
  assert.equal((html.match(/class="monthly-forecast"/g)||[]).length,1);
  assert.ok(html.includes(kr(16500,2)));assert.ok(html.includes('Månadens budget'));
- assert.ok(html.includes('Kategorisera'));assert.ok(html.includes('Kvar vid månadens slut'));assert.ok(html.includes('Så räknas det'));assert.ok(html.includes('Öppna inkomster i Historik &amp; import'));
+ assert.ok(html.includes('Kategorisera'));assert.ok(html.includes('Månadens prognos'));assert.ok(html.includes('Så räknas det'));assert.ok(html.includes('Öppna inkomster i Historik &amp; import'));
  assert.ok(!html.includes('Månadsplan'));assert.ok(!html.includes('Senast registrerat'));assert.ok(!html.includes('Lägg till inkomst'));
 });
 test('Budget forecast combines registered events with remaining plan without counting costs twice',()=>{
@@ -183,11 +183,11 @@ test('Closed months show actual outcome instead of carrying unused budget forwar
  const rows=[tx('Septemberlön',18000,'income','2026-09-25'),{...tx('Septembermat',-3000,'expense','2026-09-28'),category:'Mat'}];
  const html=focusHtml(rows,{range:{from:'2026-09-01',to:'2026-09-30'}});
  assert.ok(html.includes('Avslutad månad'));assert.ok(html.includes('Månadens utfall'));
- assert.ok(html.includes('Faktiskt kvar för månaden'));assert.ok(html.includes(kr(15000,2)));
+ assert.ok(html.includes('Månadens resultat'));assert.ok(html.includes(kr(15000,2)));
  assert.ok(html.includes(`${kr(1500,2)} sämre än budget`));assert.ok(html.includes('Jämför med budget'));
  assert.ok(html.includes('500 kr under budget'));assert.ok(!html.includes('500 kr återstår'));
- const current=focusHtml(rows.map(row=>({...row,date:'2026-10-20'})));
- assert.ok(current.includes('Kvar vid månadens slut'));assert.ok(current.includes(kr(16500,2)));
+ const current=focusHtml(rows.map(row=>({...row,date:'2026-10-10'})));
+ assert.ok(current.includes('Månadens prognos'));assert.ok(current.includes(kr(16500,2)));
 });
 test('Closed months flag transactions that still need review',()=>{
  const row={...tx('Ogranskad',-100,'expense','2026-09-20'),reviewed:false,category:'Mat'};
@@ -220,16 +220,30 @@ test('Monthly forecast explains category progress, refunds, extra income and unp
  assert.equal(monthlyForecast({...budget,transactions:[...budget.transactions,{...tx('Utanför',-9999,'expense'),excluded:true}]},focusProps.range).forecastRemaining,16700);
  assert.deepEqual(budget,before);
 });
-test('Budget month assignment separates bank date from monthly result',()=>{
+test('Calendar month follows the bank date without moving transactions',()=>{
  const september={...tx('Sen bokning',-900,'expense','2026-10-02'),category:'Mat',budgetMonth:'2026-09'};
  const october={...tx('Oktober',-200,'expense','2026-10-03'),category:'Mat'};
  const sep=monthlyForecast({...data,transactions:[september,october]},{from:'2026-09-01',to:'2026-09-30'});
  const oct=monthlyForecast({...data,transactions:[september,october]},focusProps.range);
- assert.equal(sep.actualExpense,900);assert.equal(sep.shiftedIn.length,1);assert.equal(sep.shiftedOut.length,0);
- assert.equal(oct.actualExpense,200);assert.equal(oct.shiftedIn.length,0);assert.equal(oct.shiftedOut.length,1);
+ assert.equal(sep.actualExpense,0);assert.equal(oct.actualExpense,1100);
  assert.equal(september.date,'2026-10-02');
  const html=focusHtml([september,october]);
- assert.ok(html.includes('Periodiserat utfall'));assert.ok(html.includes('hör till september 2026'));
+ assert.ok(!html.includes('Manuellt periodiserat'));assert.ok(html.includes('2026-10-02'));
+});
+test('Child benefit and spending on the 20th stay in the same calendar month',()=>{
+ const transactions=[{...tx('Barnbidrag',1250,'income','2026-10-20'),category:'Barnbidrag'},{...tx('Barnkostnad',-400,'expense','2026-10-20'),category:'Mat'}];
+ const october=monthlyForecast({...data,transactions},{from:'2026-10-01',to:'2026-10-31'});
+ const november=monthlyForecast({...data,transactions},{from:'2026-11-01',to:'2026-11-30'});
+ assert.equal(october.actualIncome,1250);assert.equal(october.actualExpense,400);assert.equal(october.actualRemaining,850);
+ assert.equal(november.actualIncome,0);assert.equal(november.actualExpense,0);
+});
+test('Closing balance rolls into the next calendar month from one saved opening balance',()=>{
+ const transactions=[tx('September income',1000,'income','2026-09-10'),tx('September expense',-200,'expense','2026-09-15'),tx('Barnbidrag',1250,'income','2026-10-20'),tx('Barnkostnad',-400,'expense','2026-10-20')];
+ const budget={...emptyBudget,cashBalances:[{month:'2026-09',opening:5000}],transactions};
+ const september=monthlyBalance(budget,{from:'2026-09-01',to:'2026-09-30'},'2026-10-24');
+ const october=monthlyBalance(budget,{from:'2026-10-01',to:'2026-10-31'},'2026-10-24');
+ assert.equal(september.actualClosing,5800);assert.equal(october.openingBalance,5800);
+ assert.equal(october.forecastRemaining,850);assert.equal(october.forecastClosing,6650);
 });
 test('Quick entry category is optional disclosure without removing its form value',()=>{
  const html=renderToStaticMarkup(createElement(RecordFields,{fields:[{name:'amount',label:'Belopp',type:'number',value:''},{name:'category',label:'Kategori',advanced:true,value:'Mat',options:['Mat','Övrigt']}]}));

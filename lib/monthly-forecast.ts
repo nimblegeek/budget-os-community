@@ -1,5 +1,5 @@
 import {type Budget,sum} from './budget';
-import {type DateRange,inDateRange,isCalendarMonth} from './date-range';
+import {type DateRange,inDateRange,isCalendarMonth,isPastCalendarMonth,monthRange,stockholmDate} from './date-range';
 import {costCategories,plannedExpenseCategory,type CostCategory} from './cost-selection';
 import {transactionExpenseCategory} from './expense-categories';
 import {transactionMatchesActiveDebt,withDebtPayments} from './debt-summary';
@@ -9,17 +9,11 @@ export const forecastTransactionCategory=(data:Budget,transaction:Budget['transa
  const category=transactionExpenseCategory(transaction.category,transaction.description);
  return category==='mortgage'?'mortgage':transactionMatchesActiveDebt(data,transaction)?'credit':category;
 };
-export const transactionBudgetMonth=(transaction:Budget['transactions'][number])=>transaction.budgetMonth||transaction.date.slice(0,7);
-export const budgetMonthName=(value:string)=>new Intl.DateTimeFormat('sv-SE',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(value+'-01T12:00:00Z'));
-
 export function monthlyForecast(data:Budget,range:DateRange){
  const plan=withDebtPayments(data);
  const calendarMonth=isCalendarMonth(range),month=range.from.slice(0,7);
- const belongs=(row:Budget['transactions'][number])=>calendarMonth?transactionBudgetMonth(row)===month:inDateRange(row.date,range);
+ const belongs=(row:Budget['transactions'][number])=>calendarMonth?row.date.slice(0,7)===month:inDateRange(row.date,range);
  const transactions=data.transactions.filter(row=>belongs(row)&&!row.excluded);
- const bookedTransactions=data.transactions.filter(row=>inDateRange(row.date,range)&&!row.excluded);
- const shiftedIn=calendarMonth?transactions.filter(row=>row.date.slice(0,7)!==month):[];
- const shiftedOut=calendarMonth?bookedTransactions.filter(row=>transactionBudgetMonth(row)!==month):[];
  const plannedIncome=sum(plan.incomes.map(row=>row.amount));
  const actualIncome=cents(transactions.filter(row=>row.kind==='income').reduce((total,row)=>total+row.amount,0));
  const plannedBy=new Map<CostCategory,number>(),actualBy=new Map<CostCategory,number>();
@@ -37,5 +31,20 @@ export function monthlyForecast(data:Budget,range:DateRange){
  const actualExpense=sum(rows.map(row=>row.actual)),forecastExpense=sum(rows.map(row=>row.expected));
  const forecastIncome=Math.max(plannedIncome,actualIncome),forecastRemaining=sum([forecastIncome,-forecastExpense]);
  const plannedExpense=sum(rows.map(row=>row.planned));
- return {rows,transactions,bookedTransactions,shiftedIn,shiftedOut,plannedIncome,plannedExpense,plannedRemaining:sum([plannedIncome,-plannedExpense]),actualIncome,actualExpense,actualRemaining:sum([actualIncome,-actualExpense]),forecastIncome,forecastExpense,forecastRemaining,remainingPlanned:sum([forecastExpense,-actualExpense]),incomeRemaining:Math.max(0,sum([forecastIncome,-actualIncome])),overPlan:sum(rows.map(row=>row.over))};
+ return {rows,transactions,plannedIncome,plannedExpense,plannedRemaining:sum([plannedIncome,-plannedExpense]),actualIncome,actualExpense,actualRemaining:sum([actualIncome,-actualExpense]),forecastIncome,forecastExpense,forecastRemaining,remainingPlanned:sum([forecastExpense,-actualExpense]),incomeRemaining:Math.max(0,sum([forecastIncome,-actualIncome])),overPlan:sum(rows.map(row=>row.over))};
+}
+
+const nextMonth=(month:string)=>monthRange(`${month}-15`,1).from.slice(0,7);
+
+export function monthlyBalance(data:Budget,range:DateRange,today=stockholmDate()){
+ const target=range.from.slice(0,7),anchors=[...(data.cashBalances||[])].filter(row=>row.month<=target).sort((a,b)=>a.month.localeCompare(b.month)),anchor=anchors.at(-1);
+ const forecast=monthlyForecast(data,range);
+ if(!anchor)return {...forecast,hasOpeningBalance:false,openingBalance:0,actualClosing:forecast.actualRemaining,forecastClosing:forecast.forecastRemaining};
+ let opening=anchor.opening,month=anchor.month,guard=0;
+ while(month<target&&guard++<240){
+  const priorRange=monthRange(`${month}-15`),prior=monthlyForecast(data,priorRange);
+  opening=sum([opening,isPastCalendarMonth(priorRange,today)?prior.actualRemaining:prior.forecastRemaining]);
+  month=nextMonth(month);
+ }
+ return {...forecast,hasOpeningBalance:true,openingBalance:opening,actualClosing:sum([opening,forecast.actualRemaining]),forecastClosing:sum([opening,forecast.forecastRemaining])};
 }

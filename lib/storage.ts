@@ -14,7 +14,7 @@ export function assertUnique(data: Budget) {
   for (const items of [data.expenses, data.incomes, data.transactions, data.debts, data.goals, data.revenueSources||[],data.budgetScenarios||[]]) {
     if (new Set(items.map(x => x.id)).size !== items.length) throw Error('Dubbla post-ID i budgeten.');
   }
-  const money=[...(data.revenueSources||[]).map(x=>x.monthlyTarget),...data.expenses.flatMap(x=>[x.amount,x.frame]),...data.incomes.map(x=>x.amount),...data.transactions.map(x=>x.amount),...data.debts.flatMap(x=>[x.balance,x.original,x.monthly]),...data.goals.flatMap(x=>[x.target,x.saved,x.monthly])];
+  const money=[...(data.revenueSources||[]).map(x=>x.monthlyTarget),...(data.cashBalances||[]).map(x=>x.opening),...data.expenses.flatMap(x=>[x.amount,x.frame]),...data.incomes.map(x=>x.amount),...data.transactions.map(x=>x.amount),...data.debts.flatMap(x=>[x.balance,x.original,x.monthly]),...data.goals.flatMap(x=>[x.target,x.saved,x.monthly])];
   if(money.some(x=>cents(x)/100!==x)) throw Error('Belopp måste anges i hela ören.');
 }
 export async function readBudget(db: DB) {
@@ -30,6 +30,7 @@ export async function readBudget(db: DB) {
     db.prepare("SELECT * FROM creditor_activities WHERE household_id='household' ORDER BY position"),
     db.prepare("SELECT * FROM debt_checkpoints WHERE household_id='household' ORDER BY date"),
     db.prepare("SELECT * FROM income_sources WHERE household_id='household' ORDER BY position"),
+    db.prepare("SELECT * FROM cash_balance_anchors WHERE household_id='household' ORDER BY month"),
   ]);
   const state = results[0].results[0];
   if (!state) {
@@ -40,6 +41,7 @@ export async function readBudget(db: DB) {
   const items = results[1].results;
   const data = budgetSchema.parse({ version: 1, name: state.name,
     ...(state.income_sources_enabled?{revenueSources:results[9].results.map(x=>({id:x.id,name:x.name,channel:x.channel,type:x.type,monthlyTarget:amount(x.monthly_target_cents),notes:x.notes,archived:!!x.archived}))}:{}),
+    ...(results[10].results.length?{cashBalances:results[10].results.map(x=>({month:x.month,opening:amount(x.opening_cents)}))}:{}),
     ...(state.debt_history_enabled?{debtHistory:results[8].results.map(x=>({date:x.date,balances:JSON.parse(String(x.balances))}))}:{}),
     ...(state.creditor_work_enabled?{creditorWork:{
       cases:results[6].results.map(x=>({id:x.id,name:x.name,debtId:x.debt_id,contact:x.contact,email:x.email,phone:x.phone,reference:x.reference,contactSource:x.contact_source,notes:x.notes,archived:!!x.archived})),
@@ -65,7 +67,7 @@ function contentStatements(db: DB, data: Budget, token: string) {
       statements.push(db.prepare(`INSERT INTO ${table} (${columns.join(',')}) SELECT ${columns.map(value).join(',')} FROM jsonb_array_elements(?::jsonb) AS data(value) WHERE ${guard}`).bind(JSON.stringify(chunk),token));
     }
   }
-  for (const table of ['debt_checkpoints','creditor_activities','creditor_cases','budget_items','transactions','income_sources','debts','savings_goals']) {
+  for (const table of ['cash_balance_anchors','debt_checkpoints','creditor_activities','creditor_cases','budget_items','transactions','income_sources','debts','savings_goals']) {
     const scope=table==='budget_items'?"plan_id='normal'":"household_id='household'";
     statements.push(db.prepare(`DELETE FROM ${table} WHERE ${scope} AND ${guard}`).bind(token));
   }
@@ -80,6 +82,7 @@ function contentStatements(db: DB, data: Budget, token: string) {
   insert('transactions',['id','household_id','date','description','amount_cents','kind','category','reviewed','source','excluded','position','income_source_id'],data.transactions.map((x,i)=>[x.id,household,x.date,x.description,cents(x.amount),x.kind,x.category,+x.reviewed,x.source,+x.excluded,i,x.incomeSourceId??null]));
   insert('debts',['id','household_id','name','balance_cents','original_cents','rate','monthly_cents','type','note','balance_verified','position'],data.debts.map((x,i)=>[x.id,household,x.name,cents(x.balance),cents(x.original),x.rate,cents(x.monthly),x.type,x.note,+x.balanceVerified,i]));
   insert('savings_goals',['id','household_id','name','target_cents','saved_cents','monthly_cents','position'],data.goals.map((x,i)=>[x.id,household,x.name,cents(x.target),cents(x.saved),cents(x.monthly),i]));
+  insert('cash_balance_anchors',['household_id','month','opening_cents'],(data.cashBalances||[]).map(x=>[household,x.month,cents(x.opening)]));
   insert('creditor_cases',['id','household_id','name','debt_id','contact','email','phone','reference','contact_source','notes','archived','position'],(data.creditorWork?.cases||[]).map((x,i)=>[x.id,household,x.name,x.debtId,x.contact,x.email,x.phone,x.reference,x.contactSource,x.notes,+x.archived,i]));
   // Chunk long activity notes more tightly than ordinary transactions.
   const acts=data.creditorWork?.activities||[];

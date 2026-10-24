@@ -29,6 +29,8 @@ async function initialize(){
   if(!sources.rows[0]?.name)await pg.transaction(tx=>tx.exec(readFileSync(resolve(root,'../../db/002-income-sources.sql'),'utf8')));
   const workspaces=await pg.query<{name:string|null}>("SELECT to_regclass('public.workspaces') AS name");
   if(!workspaces.rows[0]?.name)await pg.transaction(tx=>tx.exec(readFileSync(resolve(root,'../../db/003-workspaces.sql'),'utf8')));
+  const cashBalances=await pg.query<{name:string|null}>("SELECT to_regclass('public.cash_balance_anchors') AS name");
+  if(!cashBalances.rows[0]?.name)await pg.transaction(tx=>tx.exec(readFileSync(resolve(root,'../../db/004-cash-balances.sql'),'utf8')));
   const db=new Database(queries=>pg.transaction(async tx=>{
    const results=[];
    for(const q of queries){const r=await tx.query<Record<string,unknown>>(q.text,q.values);results.push({results:r.rows,meta:{changes:r.affectedRows??0}});}

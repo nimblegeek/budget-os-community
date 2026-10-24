@@ -28,6 +28,7 @@ class TestDB extends Database{
   db.pg=pg;openDatabases.push(db);
   await pg.exec(readFileSync(new URL('../db/postgres.sql',import.meta.url),'utf8'));
   await pg.exec(readFileSync(new URL('../db/002-income-sources.sql',import.meta.url),'utf8'));
+  await pg.exec(readFileSync(new URL('../db/004-cash-balances.sql',import.meta.url),'utf8'));
   if(data)await pg.query('INSERT INTO budgets VALUES($1,$2,$3,$4)',['household',JSON.stringify(data),7,'2026-10-15T12:00:00Z']);
   return db;
  }
@@ -129,6 +130,16 @@ test('Debt checkpoints persist independently and survive backups; old restore cl
   await writeBudget(db,old,9,crypto.randomUUID(),'test@example.invalid','Återställde gammal kopia');
   assert.deepEqual((await readBudget(db)).data,old);
   assert.equal((await db.one('SELECT count(*) n FROM debt_checkpoints')).n,0);
+});
+test('Opening cash balances persist in whole öre and old budgets keep their original shape',async()=>{
+ const db=await TestDB.create();await migrateBudget(db);const old=(await readBudget(db)).data;
+ const next={...old,cashBalances:[{month:'2026-09',opening:5000.25},{month:'2026-10',opening:-125.5}]};
+ await writeBudget(db,next,7,crypto.randomUUID(),'test@example.invalid','Ingående saldon');
+ assert.deepEqual((await readBudget(db)).data,next);
+ assert.deepEqual(await parseBackup(JSON.stringify(await makeBackup(next))),next);
+ await writeBudget(db,old,8,crypto.randomUUID(),'test@example.invalid','Återställde äldre budget');
+ assert.deepEqual((await readBudget(db)).data,old);
+ assert.equal((await db.one('SELECT count(*) n FROM cash_balance_anchors')).n,0);
 });
 test('Expense priority true/false/automatic survives storage; old backups keep their shape',async()=>{
   const db=await TestDB.create();await migrateBudget(db);const old=(await readBudget(db)).data;

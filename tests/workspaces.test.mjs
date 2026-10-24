@@ -21,7 +21,7 @@ async function createDB(){
   return out;
  }));
  db.pg=pg;open.push(db);
- for(const file of ['postgres.sql','002-income-sources.sql','003-workspaces.sql'])await pg.exec(readFileSync(new URL('../db/'+file,import.meta.url),'utf8'));
+ for(const file of ['postgres.sql','002-income-sources.sql','003-workspaces.sql','004-cash-balances.sql'])await pg.exec(readFileSync(new URL('../db/'+file,import.meta.url),'utf8'));
  return db;
 }
 const personalData=name=>({...structuredClone(emptyBudget),name,notes:name+' private notes',transactions:[{id:'same-payment-id',date:'2026-10-20',description:name+' private payment',amount:100,kind:'income',category:'Private',source:'Test',reviewed:true,excluded:false}]});

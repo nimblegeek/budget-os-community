@@ -15,7 +15,7 @@ async function transaction(statements){
 }
 try{
  await query('CREATE TABLE IF NOT EXISTS schema_migrations(id text PRIMARY KEY,sha256 text NOT NULL,applied_at timestamptz NOT NULL DEFAULT now())');
- for(const [id,file] of [['001-budget-os','postgres.sql'],['002-income-sources','002-income-sources.sql'],['003-workspaces','003-workspaces.sql']]){
+ for(const [id,file] of [['001-budget-os','postgres.sql'],['002-income-sources','002-income-sources.sql'],['003-workspaces','003-workspaces.sql'],['004-cash-balances','004-cash-balances.sql']]){
   const ddl=readFileSync(new URL('../db/'+file,import.meta.url),'utf8'),hash=createHash('sha256').update(ddl).digest('hex');
   const existing=await query('SELECT sha256 FROM schema_migrations WHERE id=$1',[id]);
   if(existing.length){if(existing[0].sha256!==hash)throw Error('Migration checksum mismatch: '+id);console.log(id+': schema verified');continue;}
